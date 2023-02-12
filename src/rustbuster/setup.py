@@ -1,4 +1,6 @@
 from setuptools import setup
+import os
+from glob import glob
 
 package_name = 'rustbuster'
 
@@ -10,6 +12,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        (os.path.join('share', package_name), glob('launch/*launch.xml')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -20,8 +23,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'talker = py_pubsub.publisher_member_function:main',
-            'listener = py_pubsub.subscriber_member_function:main',
+            'talker = rustbuster.publisher_member_function:main',
+            #'listener = rustbuster.subscriber_member_function:main',
+            'rustbuster_init = rustbuster.rustbuster_main:main',
         ],
     },
 )
