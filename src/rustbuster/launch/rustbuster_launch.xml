@@ -1,8 +1,26 @@
 <launch>
 
-	<!--node pkg="rustbuster" exec="talker" name="talker_pub" output="screen"/>
-	<node pkg="rustbuster" exec="rustbuster_init" name="rustbuster_init" output="screen"/-->
-	<!--Initialize spots systems and communication>
+	<node pkg="rustbuster" exec="rustbuster_init" name="rustbuster_init" output="screen"/>
+
+	<!--Webot simulation-->
+	<include file="$(find-pkg-share webots_spot)/launch/spot_launch.py"/>
+
+
+</launch>
+<!--
+
+	<include file="$(find-pkg-share webots_spot)/launch/nav_launch.py"/>
+		<var set_initial_pose="true"/>
+	<include/>
+	<include file="$(find-pkg-share webots_spot)/launch/slam_launch.py"/>
+	<node pkg="teleop_twist_keyboard" exec="teleop_twist_keyboard" name="teleop" output="screen"/>
+
+
+<node pkg="rustbuster" exec="talker" name="talker_pub" output="screen"/>
+<include file="$(find-pkg-share webots_spot)/launch/rtabmap_launch.py"/>
+
+
+	<Initialize spots systems and communication>
 	<include file="$(find-pkg-share spot_driver)/launch/point_cloud_xyz.launch.py"/>
 	<include file="$(find-pkg-share spot_driver)/launch/rs_launch.py"/>
 	<include file="$(find-pkg-share spot_driver)/launch/spot_driver.launch.py">
@@ -11,12 +29,6 @@
 	<-include file="$(find-pkg-share spot_driver)/launch/spot_driver_with_namespace.launch.py"/>
 
 	<-???->
-	<include file="$(find-pkg-share spot_description)/launch/description.launch.py"/-->
+	<include file="$(find-pkg-share spot_description)/launch/description.launch.py"/
 
-	<!--Webot simulation-->
-	<include file="$(find-pkg-share webots_spot)/launch/nav_launch.py"/>
-	<include file="$(find-pkg-share webots_spot)/launch/slam_launch.py"/>
-	<include file="$(find-pkg-share webots_spot)/launch/spot_launch.py"/>
-
-</launch>
-<!--include file="$(find-pkg-share webots_spot)/launch/rtabmap_launch.py"/-->
+-->
