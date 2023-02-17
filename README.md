@@ -20,19 +20,32 @@ These instructions will help you set up and use RustBuster for your own offshore
 You will need the following software and hardware to use RustBuster:
 
  * Spot robot from Boston Dynamics
- * Computer with ROS and Python installed
+ * Computer with ROS2 and Python3 installed
 
 ### Installation
-1. Clone the RustBuster repository to your computer:\
-    ```git clone https://github.com/Hakaino/RustBuster```
-2. Install any necessary dependencies by running the following command:\
-    ````rosdep install --from-paths src --ignore-src -r -y````
-3. Build the project by running the following command:\
-    ```catkin build```
+1. Clone the RustBuster and other required repositories to your computer:
+   ```
+   git clone https://github.com/Hakaino/RustBuster
+   cd RustBuster
+   git clone https://github.com/bdaiinstitute/spot_ros2.git
+   ```
+2. Install any necessary dependencies by running the following command:
+   ````
+   pip3 install bosdyn-client bosdyn-mission bosdyn-api bosdyn-core
+   sudo apt install ros-$ROS_DISTRO-cartographer # used for 3D SLAM 
+   rosdep install --from-paths src --ignore-src -r -y 
+   ````
+3. Build and source the project by running the following command:
+    ```
+    colcon build --symlink-install
+    source install/setup.bash
+    ```
 ### Usage
 4. Connect the Spot robot to your computer and turn it on.
 5. Launch the RustBuster program by running the following command:\
-   ```roslaunch rustbuster rustbuster.launch```
+   ```
+   ros2 launch rustbuster rustbuster_launch.xml
+   ```
 6. The robot will begin performing the inspection routine and collecting data. You can monitor the progress and view the data by using the ROS tools.
 
 ## Contributing
