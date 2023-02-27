@@ -10,19 +10,20 @@ from launch_ros.actions import Node
 
 # Define launch description
 def generate_launch_description():
-	# Set the TURTLEBOT3_MODEL environment variable
-	tb3_model = os.environ["TURTLEBOT3_MODEL"] if "TURTLEBOT3_MODEL" in os.environ else 'waffle'
-	set_env_var = SetEnvironmentVariable("TURTLEBOT3_MODEL", tb3_model)
-	#gazebo_model = os.environ["GAZEBO_MODEL_PATH"] if "GAZEBO_MODEL_PATH" in os.environ else "/opt/ros/humble/share" \
-	#                                                                                         "/turtlebot3_gazebo/models"
-	#set_env_var = SetEnvironmentVariable("GAZEBO_MODEL_PATH", gazebo_model)
+	# Set environment variable
+	os.environ.setdefault("TURTLEBOT3_MODEL", "waffle")
+	os.environ.setdefault("GAZEBO_MODEL_PATH", "$GAZEBO_MODEL_PATH:/opt/ros/humble/share/turtlebot3_gazebo/models")
+
 
 	# Define ROS2 parameters
 	use_sim_time = LaunchConfiguration('use_sim_time', default='false')
+	headless = LaunchConfiguration('headless', default=False)
 
-	# Get the path to the Turtlebot3 Gazebo launch file
+	# Get launch files
 	tb3_gazebo_launch_file = os.path.join(get_package_share_directory('turtlebot3_gazebo'), 'launch',
-	                                      'turtlebot3_world.launch.py')
+	                                      "turtlebot3_world.launch.py")
+	nav2_launch_file = os.path.join(get_package_share_directory('nav2_bringup'), 'launch', "tb3_simulation_launch.py")
+
 	# Get configuration files
 	rviz_config = os.path.join(get_package_share_directory('rustbuster'), "rviz2_config.rviz")
 	exploration_params_file = os.path.join(get_package_share_directory('rustbuster'), 'exploration_params.yaml')
@@ -31,7 +32,7 @@ def generate_launch_description():
 	ld = LaunchDescription()
 
 	# Rviz
-	if 1:
+	if False:
 		ld.add_action(Node(
 					package='rviz2',
 					namespace='rviz2',
@@ -39,6 +40,13 @@ def generate_launch_description():
 					name='rviz2',
 					arguments=[rviz_config],
 		))
+	# Nav2
+	if True:
+		ld.add_action(IncludeLaunchDescription(
+				PythonLaunchDescriptionSource(nav2_launch_file),
+				launch_arguments={"headless": headless}.items()
+		))
+
 
 	# Declare ROS2 parameters
 	# ld.add_action(DeclareLaunchArgument(
@@ -46,14 +54,12 @@ def generate_launch_description():
 	# 		default_value=use_sim_time,
 	# 		description='Use simulation (Gazebo) clock if true'
 	# ))
-	print("rviz-----------------")
 
 	# # Launch the Turtlebot3 Gazebo simulation
 	# ld.add_action(IncludeLaunchDescription(
 	# 		PythonLaunchDescriptionSource(tb3_gazebo_launch_file),
 	# 		launch_arguments={'use_sim_time': use_sim_time}.items()
 	# ))
-	print("rviz-----------------")
 
 	# Start exploration using the SLAM mapping node
 	# ld.add_action(Node(
