@@ -12,7 +12,9 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        (os.path.join('share', package_name), glob('launch/*launch.xml')),
+        (os.path.join('share', package_name), glob('launch/*_launch*')),
+        (os.path.join('share', package_name), glob('models/*/urdf/*urdf*')),
+        (os.path.join('share', package_name), glob('config/*')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -23,7 +25,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'talker = rustbuster.publisher_member_function:main',
+            #'talker = rustbuster.publisher_member_function:main',
             #'listener = rustbuster.subscriber_member_function:main',
             'rustbuster_init = rustbuster.rustbuster_main:main',
         ],

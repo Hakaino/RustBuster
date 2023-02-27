@@ -1,34 +1,27 @@
 <launch>
 
-	<node pkg="rustbuster" exec="rustbuster_init" name="rustbuster_init" output="screen"/>
+  <!-- Launch the robot driver -->
 
-	<!--Webot simulation-->
-	<include file="$(find-pkg-share webots_spot)/launch/spot_launch.py"/>
 
+  <!-- Launch the SLAM Toolbox node (2D and 3D) -->
+  <!--include file="$(find-pkg-share slam_toolbox)/launch/lifelong_launch.py"/>
+  <-node name="slam_toolbox" pkg="slam_toolbox" exec="lifelong_slam_toolbox_node" output="screen">
+    <include value="config/mapper_params_lifelong.yaml"/>
+  </node-->
+
+  <!-- Launch the mapping node ->
+  <node name="mapping_node" pkg="frontier_exploration" exec="explore_server" output="screen">
+    <remap from="map" to="/map"/>
+    <param name="planner_frequency" value="1.0"/>
+    <param name="min_frontier_size" value="0.5"/>
+  </node-->
+
+  <!-- Launch Spot driver-->
+  <include file="$(find-pkg-share spot_driver)/launch/spot_driver.launch.py">
+	<arg name="config_file" value="config/spot_config.yaml"/>
+  </include>
+
+  <!-- visualize -->
+  <node name="rviz" pkg="rviz" exec="rviz"/>
 
 </launch>
-<!--
-
-	<include file="$(find-pkg-share webots_spot)/launch/nav_launch.py"/>
-		<var set_initial_pose="true"/>
-	<include/>
-	<include file="$(find-pkg-share webots_spot)/launch/slam_launch.py"/>
-	<node pkg="teleop_twist_keyboard" exec="teleop_twist_keyboard" name="teleop" output="screen"/>
-
-
-<node pkg="rustbuster" exec="talker" name="talker_pub" output="screen"/>
-<include file="$(find-pkg-share webots_spot)/launch/rtabmap_launch.py"/>
-
-
-	<Initialize spots systems and communication>
-	<include file="$(find-pkg-share spot_driver)/launch/point_cloud_xyz.launch.py"/>
-	<include file="$(find-pkg-share spot_driver)/launch/rs_launch.py"/>
-	<include file="$(find-pkg-share spot_driver)/launch/spot_driver.launch.py">
-	<arg config_file="$(var config_file)"/>
-	</include>
-	<-include file="$(find-pkg-share spot_driver)/launch/spot_driver_with_namespace.launch.py"/>
-
-	<-???->
-	<include file="$(find-pkg-share spot_description)/launch/description.launch.py"/
-
--->

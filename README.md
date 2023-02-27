@@ -32,7 +32,8 @@ You will need the following software and hardware to use RustBuster:
 2. Install any necessary dependencies by running the following command:
    ````
    pip3 install bosdyn-client bosdyn-mission bosdyn-api bosdyn-core
-   sudo apt install ros-$ROS_DISTRO-cartographer # used for 3D SLAM 
+   sudo apt install ros-$ROS_DISTRO-cartographer # used for 3D SLAM
+   sudo apt install ros-foxy-turtlebot3* # used to simulate the exploration since spot simulations are not great
    rosdep install --from-paths src --ignore-src -r -y 
    ````
 3. Build and source the project by running the following command:
