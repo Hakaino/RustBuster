@@ -7,6 +7,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from launch.conditions import IfCondition
+from launch.actions import TimerAction
 
 
 def setEnvVars():
@@ -58,7 +59,7 @@ def generate_launch_description():
 	# nav2_launch_file = os.path.join(get_package_share_directory("rustbuster"), 'launch', "nav2_bringup_launch.py")
 	nav2_launch_slam = os.path.join(get_package_share_directory("nav2_bringup"), 'launch', "slam_launch.py")
 	nav2_launch_nav = os.path.join(get_package_share_directory("nav2_bringup"), 'launch', "navigation_launch.py") #"slam_launch.py") #
-	slam_launch_file = os.path.join(get_package_share_directory("slam_toolbox"), 'launch', "online_async_launch.py")
+	slam_launch_file = os.path.join(get_package_share_directory("slam_toolbox"), 'launch', "online_sync_launch.py")
 
 	# Create launch description
 	ld = LaunchDescription()
@@ -67,8 +68,14 @@ def generate_launch_description():
 	ld.add_action(DeclareLaunchArgument(
 			'use_sim_time',
 			default_value=use_sim_time,
-			description='Use simulation (Gazebo) clock if true'
+			description='RustBuster main launcher'
 	))
+
+	# Nav2
+	if 1:
+		print("this makes me cry-------------------------------")
+		# ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(nav2_launch_slam)))
+		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(nav2_launch_nav)))
 
 	# Rviz
 	if 1:
@@ -97,7 +104,10 @@ def generate_launch_description():
 	if 1:
 		ld.add_action(IncludeLaunchDescription(
 				PythonLaunchDescriptionSource(tb3_gazebo_launch_file),
-				launch_arguments={'use_sim_time': use_sim_time}.items()
+				launch_arguments={
+					'use_sim_time': use_sim_time,
+					"headless": headless
+				}.items()
 		))
 
 	# Robot state publisher
@@ -126,7 +136,23 @@ def generate_launch_description():
 				executable="lifecycle_manager",
 				name='nav2_manage',
 				parameters=[{
-					"node_names": ['controller_server', 'planner_server', 'behavior_server', 'bt_navigator', 'waypoint_follower'],
+					"node_names": ['controller_server',
+                       'smoother_server',
+                       'planner_server',
+                       'behavior_server',
+                       'bt_navigator',
+                       'waypoint_follower',
+                       'velocity_smoother'],
+
+
+						#'controller_server',
+					    #'planner_server',
+						#'behavior_server',
+						#'bt_navigator',
+						#'waypoint_follower',
+						#'smoother_server',
+						#'velocity_smoother'
+					#],
 					"autostart": "True",
 					#"bond_timeout": "4.0",
 					#"attempt_respawn_reconnection": "true",
@@ -134,11 +160,7 @@ def generate_launch_description():
 				}],
 		))
 
-	# Nav2
-	if 1:
-		print("this makes me cry-------------------------------")
-		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(nav2_launch_slam)))
-		#ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(nav2_launch_nav)))
+
 
 	# launch_arguments={"headless": headless}.items()
 	# launch_arguments={
