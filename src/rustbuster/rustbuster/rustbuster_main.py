@@ -1,48 +1,39 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-from nav2_simple_commander.robot_navigator import BasicNavigator
+from std_msgs.msg import Bool
 from geometry_msgs.msg import Pose
+import roslaunch
 
 
 class RustBusterMain(Node):
 
 	def __init__(self):
 		super().__init__('rustbuster_main')
-		self.get_logger().info("OOOOOOOOOO----------------")
-		self.nav = BasicNavigator()
-		#self.nav.waitUntilNav2Active()  # if autostarted, else use `lifecycleStartup()`
-		self.goal = self.create_subscription(Pose, "goal_pose", self.goTo, 10)
-		self.initialPose = self.create_subscription(Pose, "pose", self.setPose, 10)
-		self.initialPose = self.create_subscription(Pose, "map", self.mapListener, 10)
-		self.get_logger().info("11111111----------------")
+		# self.nav = BasicNavigator()
+		# self.nav.waitUntilNav2Active()  # if autostarted, else use `lifecycleStartup()`
+		# self.goal = self.create_subscription(Pose, "goal_pose", self.goTo, 10)
+		self.switch = self.create_subscription(Bool, "switch_mode", self.control, 1)
+		self.teleop_node = launch_ros.core.Node("teleop_twist_keyboard", "teleop_twist_keyboard")
+		self.launch = launch_ros.scriptapi.ROSLaunch()
+		self.launch.start()
+		self.teleop = self.launch.launch(self.teleop_node)
 
+	def readMessage(self, message):
+		msg = str(message.data)
+		self.get_logger().info(msg)
 
-	def mapListener(self, map):
-		self.get_logger().info("map change----------------")
-
-
-	def setPose(self, init_pose):
-		self.get_logger().info("definning current pose----------------")
-		self.nav.setInitialPose(init_pose)
-
-	def goTo(self, goal_pose):
-		self.get_logger().info("go to goal----------------")
-		path = self.nav.getPath(self.init_pose, goal_pose)
-		smoothed_path = self.nav.smoothPath(path)
-		self.nav.goToPose(goal_pose)
-		while not self.nav.isTaskComplete():
-			feedback = self.nav.getFeedback()
-			if feedback.navigation_duration > 600:
-				self.nav.cancelTask()
-
-		"""result = nav.getResult()
-		if result == TaskResult.SUCCEEDED:
-			print('Goal succeeded!')
-		elif result == TaskResult.CANCELED:
-			print('Goal was canceled!')
-		elif result == TaskResult.FAILED:
-			print('Goal failed!')"""
+	def control(self, auto):
+		if bool(auto.data):
+			msg = "inspection"
+			# start auto
+		else:
+			msg = "manual"
+			self.teleop = self.launch.launch(self.teleop_node)
+			self.get_logger().info("change: ", self.teleop.is_alive())
+			self.teleop.stop()
+			# start teleop
+		self.get_logger().info("Change to " + msg + "mode")
 
 
 def main(args=None):

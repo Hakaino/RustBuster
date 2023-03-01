@@ -36,7 +36,7 @@ def generate_launch_description():
 	tb3_gazebo_launch_file = os.path.join(get_package_share_directory('turtlebot3_gazebo'), 'launch',
 	                                      "turtlebot3_world.launch.py")
 	nav2_launch_nav = os.path.join(get_package_share_directory("nav2_bringup"), 'launch', "navigation_launch.py")
-	slam_launch_file = os.path.join(get_package_share_directory("slam_toolbox"), 'launch', "online_sync_launch.py")
+	slam_launch_file = os.path.join(get_package_share_directory("slam_toolbox"), 'launch', "online_sync_launch.py") # "lifelong_launch.py")
 	explore_launch_file = os.path.join(get_package_share_directory("explore_lite"), 'launch', "explore.launch.py")
 
 	# Create launch description
@@ -73,7 +73,7 @@ def generate_launch_description():
 		))
 
 	# Launch the Turtlebot3 Gazebo simulation
-	if 1:
+	if 0:
 		ld.add_action(IncludeLaunchDescription(
 				PythonLaunchDescriptionSource(tb3_gazebo_launch_file),
 				launch_arguments={
@@ -102,7 +102,7 @@ def generate_launch_description():
 		))
 
 	# Explorer
-	if 1:
+	if 0:
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(explore_launch_file)))
 
 
