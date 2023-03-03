@@ -14,7 +14,7 @@
     auto_stand: False
     deadzone: 0.05
     estop_timeout: 9.0
-    username: "user"
-    password: "password"
-    hostname: "10.0.0.3"
+    username: "pacman"
+    password: "xwpsA708ggÅt"
+    hostname: "192.168.80.3"
     start_estop: False

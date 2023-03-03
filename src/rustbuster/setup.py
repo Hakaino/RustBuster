@@ -13,7 +13,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name + "/launch/"), glob('launch/*_launch*')),
-        #(os.path.join('share', package_name + "models/"), glob('models/*/urdf/*urdf*')),
+        (os.path.join('share', package_name + "/models/"), glob('models/spot_description/*.urdf')),
         (os.path.join('share', package_name + "/config/"), glob('config/*')),
         (os.path.join('share', package_name + "/maps/"), glob('maps/*')),
     ],
