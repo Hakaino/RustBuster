@@ -61,7 +61,7 @@ def generate_launch_description():
 		))
 
 	# cartogrpher
-	if 1:
+	if 0:
 		ld.add_action(IncludeLaunchDescription(
 				PythonLaunchDescriptionSource(cartographer_launch),
 				# launch_arguments={
@@ -94,7 +94,13 @@ def generate_launch_description():
 
 	# Explorer
 	if 1:
-		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(explore_launch)))
+		ld.add_action(IncludeLaunchDescription(
+				PythonLaunchDescriptionSource(explore_launch),
+				launch_arguments={
+					'use_sim_time': use_sim_time,
+					"headless": headless
+				}.items()
+		))
 
 
 	# My controller
