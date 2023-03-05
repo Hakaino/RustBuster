@@ -26,7 +26,7 @@ class RustBusterMain(Node):
 		self.get_logger().info(msg)
 
 	def control(self, auto):
-		self.explore.publish(bool(auto.data))
+		self.explore.publish(auto)
 		msg = "auto"
 
 		if not bool(auto.data):
