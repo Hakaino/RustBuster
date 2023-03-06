@@ -1,5 +1,5 @@
 # Default ignored files
-.idea/
+../../.idea/
 build/
 install/
 log/
