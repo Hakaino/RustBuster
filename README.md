@@ -22,6 +22,12 @@ You will need the following software and hardware to use RustBuster:
  * Spot robot from Boston Dynamics
  * Computer with ROS2 and Python3 installed
 
+### Use Docker container (no installation required)
+  ````
+  git clone https://github.com/Hakaino/RustBuster
+  cd RustBuster
+  docker build -t packman/rustbuster .
+  ````
 ### Installation
 1. Clone the RustBuster and other required repositories to your computer:
    ```
@@ -45,7 +51,7 @@ You will need the following software and hardware to use RustBuster:
 4. Connect the Spot robot to your computer and turn it on.
 5. Launch the RustBuster program by running the following command:\
    ```
-   ros2 launch rustbuster rustbuster_launch.xml
+   ros2 launch rustbuster rustbuster_launch.py
    ```
 6. The robot will begin performing the inspection routine and collecting data. You can monitor the progress and view the data by using the ROS tools.
 
