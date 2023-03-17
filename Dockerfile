@@ -34,6 +34,16 @@ RUN git clone https://github.com/robo-friends/m-explore-ros2.git
 
 # Install dependencies
 WORKDIR /root/ros-ws/
-RUN rosdep install -i --from-path src --rosdistro humble -y
-RUN alias rustbuster_build="clear; cd /root/ros-ws/; colcon build --symlink-install && . install/setup.bash"
-RUN rustbuster_build && ros2 launch rustbuster spot_launch.py
+CMD rosdep install -i --from-path src --rosdistro humble -y
+CMD ["alias", "rustbuster_build=", "clear; cd /root/ros-ws/; colcon build --symlink-install && . install/setup.bash"]
+CMD ["rustbuster_build" ]
+
+CMD ["ros2", "launch", "rustbuster", "turtle_sim_launch.py"]
+CMD ["ros2", "launch", "rustbuster", "spot_launch.py"]
+
+
+# Some usefull docker commands
+# sudo docker rm $(sudo docker ps -a -q -f status=exited)
+# sudo docker build -t packman .
+# sudo docker tag 44cd59728b4a packman:latest
+# sudo docker run packman

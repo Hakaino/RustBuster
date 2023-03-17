@@ -2,6 +2,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 from std_msgs.msg import Bool
+from std_msgs.msg import Image
 from geometry_msgs.msg import Pose
 from launch_ros.actions import Node as nd
 import subprocess
@@ -14,6 +15,7 @@ class RustBusterMain(Node):
 		# self.nav = BasicNavigator()
 		# self.nav.waitUntilNav2Active()  # if autostarted, else use `lifecycleStartup()`
 		# self.goal = self.create_subscription(Pose, "goal_pose", self.goTo, 10)
+		self.switch = self.create_subscription(Bool, "rustbuster/explore", self.control, 10)
 		self.switch = self.create_subscription(Bool, "rustbuster/explore", self.control, 10)
 		self.explore = self.create_publisher(Bool, "explore/resume", 10)
 		# self.teleop_node = nd("teleop_twist_keyboard", "teleop_twist_keyboard")
