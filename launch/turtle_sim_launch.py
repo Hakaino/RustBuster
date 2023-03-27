@@ -60,7 +60,7 @@ def generate_launch_description():
 	if 1:
 		ld.add_action(IncludeLaunchDescription(
 				PythonLaunchDescriptionSource(cartographer_launch),
-				launch_arguments={'use_sim_time': "True"}.items()
+				launch_arguments={'use_sim_time': "False"}.items()
 		))
 				#remappings=[
 				#	('points2_1', 'horizontal_laser_3d'),
@@ -104,7 +104,7 @@ def generate_launch_description():
 		ld.add_action(IncludeLaunchDescription(
 				PythonLaunchDescriptionSource(explore_launch),
 				launch_arguments={
-					'use_sim_time': use_sim_time,
+					'use_sim_time': False,
 					"headless": headless
 				}.items()
 		))

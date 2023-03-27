@@ -19,31 +19,29 @@ def generate_launch_description():
 	#ld.add_action(SetRemap(src='points_frontleft', dst='vertical_laser_3d'))
 
 	# Nav2
-	if 1:
+	if 0:
 		nav2_launch = os.path.join(get_package_share_directory("nav2_bringup"), 'launch', "navigation_launch.py")
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(nav2_launch)))
 
-	# cartographer
+	# My controller
 	if 1:
-		cartographer_config = os.path.join(get_package_share_directory('rustbuster'), 'config/backpack_3d.lua')
-		cartographer_launch = os.path.join(get_package_share_directory("cartographer_ros"), 'launch', "backpack_3d.launch.py")
-		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(cartographer_launch)))
+		ld.add_action(Node(
+				package="rustbuster",
+				executable="rustbuster_init",
+				name='rustbuster_main',
+				output='screen'
+		))
 
-	# Rviz
-	if 0:
+	# RVIZ2
+	if 1:
 		ld.add_action(Node(
 				package='rviz2',
 				namespace='rviz2',
 				executable='rviz2',
 				name='rviz2',
-				arguments=[os.path.join(get_package_share_directory('rustbuster'), "config", "spot_rviz2_config.rviz")],
+				arguments=["-d", os.path.join(get_package_share_directory("rustbuster"), "config", "spot_rviz2_config.rviz")],
 				output='log'
 		))
-
-	# spot_description
-	if 1:
-		spot_launch = os.path.join(get_package_share_directory('spot_description'), 'launch', "description.launch.py")
-		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(spot_launch)))
 
 	# Launch spot driver
 	if 1:
@@ -58,27 +56,54 @@ def generate_launch_description():
 		                               "point_cloud_xyz.launch.py")
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(depth_to_launch)))
 
-	# Explorer
+	# cartographer
 	if 1:
+		cartographer_config = os.path.join(get_package_share_directory('rustbuster'), 'config/backpack_3d.lua')
+		#cartographer_launch = os.path.join(get_package_share_directory("cartographer_ros"), 'launch', "backpack_3d.launch.py")
+		#ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(cartographer_launch)))
+
+
+		## ***** Nodes *****
+		ld.add_action(Node(
+				package='cartographer_ros',
+				executable='cartographer_node',
+				#parameters=[{'use_sim_time': "False"}],
+				arguments=[
+					'-configuration_directory',
+					get_package_share_directory('rustbuster') + '/config',
+					'-configuration_basename', "backpack_3d.lua"],
+				remappings=[
+					('points2_1', 'horizontal_laser_3d'),
+					('points2_2', 'vertical_laser_3d')],
+				output='screen'
+		))
+
+		ld.add_action(Node(
+				package='cartographer_ros',
+				executable='cartographer_occupancy_grid_node',
+				parameters=[
+					#{'use_sim_time': "False"},
+					{'resolution': 0.05}],
+		))
+
+	# Explorer
+	if 0:
 		explore_launch = os.path.join(get_package_share_directory("explore_lite"), 'launch', "explore.launch.py")
 		ld.add_action(IncludeLaunchDescription(
 				PythonLaunchDescriptionSource(explore_launch),
 				launch_arguments={
-					'use_sim_time': 'False',
+					'use_sim_time': "False",
 					"headless": "True"
 				}.items()
 		))
 
-	# My controller
-	if 1:
-		ld.add_action(Node(
-				package="rustbuster",
-				executable="rustbuster_init",
-				name='rustbuster_main',
-				output='screen'
-		))
+	# going another way
 
-	## going an other way
+	# spot_description
+	if 0:
+		spot_launch = os.path.join(get_package_share_directory('spot_description'), 'launch', "description.launch.py")
+		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(spot_launch)))
+
 	# Realsense
 	if 0:
 		realsense_launch = os.path.join(get_package_share_directory("realsense2_camera"), 'launch', "rs_launch.py")
