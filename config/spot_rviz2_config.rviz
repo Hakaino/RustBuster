@@ -5,9 +5,9 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /Walls1
+        - /Map1/Topic1
       Splitter Ratio: 0.5
-    Tree Height: 632
+    Tree Height: 647
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -25,7 +25,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: PointCloud2
+    SyncSource: left_cloud
 Visualization Manager:
   Class: ""
   Displays:
@@ -47,135 +47,6 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
-    - Alpha: 0.699999988079071
-      Class: rviz_default_plugins/Map
-      Color Scheme: map
-      Draw Behind: true
-      Enabled: true
-      Name: Map
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /map
-      Update Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /map_updates
-      Use Timestamp: false
-      Value: true
-    - Alpha: 1
-      Class: rviz_default_plugins/RobotModel
-      Collision Enabled: false
-      Description File: ""
-      Description Source: Topic
-      Description Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: ""
-      Enabled: true
-      Links:
-        All Links Enabled: true
-        Expand Joint Details: false
-        Expand Link Details: false
-        Expand Tree: false
-        Link Tree Style: ""
-      Mass Properties:
-        Inertia: false
-        Mass: false
-      Name: RobotModel
-      TF Prefix: ""
-      Update Interval: 0
-      Value: true
-      Visual Enabled: true
-    - Class: rviz_default_plugins/TF
-      Enabled: true
-      Frame Timeout: 15
-      Frames:
-        All Enabled: true
-        base_link:
-          Value: true
-        horizontal_vlp16_link:
-          Value: true
-        imu_link:
-          Value: true
-        map:
-          Value: true
-        odom:
-          Value: true
-        vertical_vlp16_link:
-          Value: true
-      Marker Scale: 1
-      Name: TF
-      Show Arrows: true
-      Show Axes: true
-      Show Names: false
-      Tree:
-        map:
-          odom:
-            base_link:
-              horizontal_vlp16_link:
-                {}
-              imu_link:
-                {}
-              vertical_vlp16_link:
-                {}
-      Update Interval: 0
-      Value: true
-    - Alpha: 1
-      Autocompute Intensity Bounds: true
-      Autocompute Value Bounds:
-        Max Value: 10
-        Min Value: -10
-        Value: true
-      Axis: Z
-      Channel Name: intensity
-      Class: rviz_default_plugins/LaserScan
-      Color: 255; 255; 255
-      Color Transformer: ""
-      Decay Time: 0
-      Enabled: true
-      Invert Rainbow: false
-      Max Color: 255; 255; 255
-      Max Intensity: 4096
-      Min Color: 0; 0; 0
-      Min Intensity: 0
-      Name: LaserScan
-      Position Transformer: ""
-      Selectable: true
-      Size (Pixels): 3
-      Size (m): 0.009999999776482582
-      Style: Flat Squares
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /slam_toolbox/scan_visualization
-      Use Fixed Frame: true
-      Use rainbow: true
-      Value: true
-    - Class: rviz_default_plugins/Image
-      Enabled: true
-      Max Value: 1
-      Median window: 5
-      Min Value: 0
-      Name: Image
-      Normalize Range: true
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /camera/color/image_raw
-      Value: true
     - Alpha: 1
       Class: rviz_default_plugins/Polygon
       Color: 25; 255; 0
@@ -189,17 +60,399 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /global_costmap/published_footprint
       Value: false
+    - Alpha: 0.699999988079071
+      Class: rviz_default_plugins/Map
+      Color Scheme: map
+      Draw Behind: true
+      Enabled: true
+      Name: Map
+      Topic:
+        Depth: 5
+        Durability Policy: System Default
+        Filter size: 10
+        History Policy: System Default
+        Reliability Policy: System Default
+        Value: /map
+      Update Topic:
+        Depth: 5
+        Durability Policy: System Default
+        History Policy: System Default
+        Reliability Policy: System Default
+        Value: /map_updates
+      Use Timestamp: false
+      Value: true
+    - Alpha: 1
+      Class: rviz_default_plugins/RobotModel
+      Collision Enabled: false
+      Description File: ""
+      Description Source: Topic
+      Description Topic:
+        Depth: 5
+        Durability Policy: System Default
+        History Policy: System Default
+        Reliability Policy: System Default
+        Value: /robot_description
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+      Mass Properties:
+        Inertia: false
+        Mass: false
+      Name: Spot
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Class: rviz_default_plugins/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: true
+        back:
+          Value: true
+        back_fisheye:
+          Value: true
+        base_link:
+          Value: true
+        body:
+          Value: true
+        flat_body:
+          Value: true
+        front_left_hip:
+          Value: true
+        front_left_lower_leg:
+          Value: true
+        front_left_upper_leg:
+          Value: true
+        front_rail:
+          Value: true
+        front_right_hip:
+          Value: true
+        front_right_lower_leg:
+          Value: true
+        front_right_upper_leg:
+          Value: true
+        frontleft:
+          Value: true
+        frontleft_fisheye:
+          Value: true
+        frontright:
+          Value: true
+        frontright_fisheye:
+          Value: true
+        gpe:
+          Value: true
+        head:
+          Value: true
+        imu:
+          Value: true
+        left:
+          Value: true
+        left_fisheye:
+          Value: true
+        map:
+          Value: true
+        odom:
+          Value: true
+        rear_left_hip:
+          Value: true
+        rear_left_lower_leg:
+          Value: true
+        rear_left_upper_leg:
+          Value: true
+        rear_rail:
+          Value: true
+        rear_right_hip:
+          Value: true
+        rear_right_lower_leg:
+          Value: true
+        rear_right_upper_leg:
+          Value: true
+        right:
+          Value: true
+        right_fisheye:
+          Value: true
+        vision:
+          Value: true
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: false
+      Tree:
+        body:
+          base_link:
+            {}
+          flat_body:
+            {}
+          front_left_hip:
+            front_left_upper_leg:
+              front_left_lower_leg:
+                {}
+          front_rail:
+            {}
+          front_right_hip:
+            front_right_upper_leg:
+              front_right_lower_leg:
+                {}
+          head:
+            back:
+              back_fisheye:
+                {}
+            frontleft:
+              frontleft_fisheye:
+                {}
+            frontright:
+              frontright_fisheye:
+                {}
+            imu:
+              {}
+            left:
+              left_fisheye:
+                {}
+            right:
+              right_fisheye:
+                {}
+          odom:
+            gpe:
+              {}
+          rear_left_hip:
+            rear_left_upper_leg:
+              rear_left_lower_leg:
+                {}
+          rear_rail:
+            {}
+          rear_right_hip:
+            rear_right_upper_leg:
+              rear_right_lower_leg:
+                {}
+          vision:
+            {}
+        map:
+          {}
+      Update Interval: 0
+      Value: true
+    - Class: rviz_default_plugins/Image
+      Enabled: false
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: front_right
+      Normalize Range: true
+      Topic:
+        Depth: 5
+        Durability Policy: System Default
+        History Policy: System Default
+        Reliability Policy: System Default
+        Value: /camera/frontright/image
+      Value: false
+    - Class: rviz_default_plugins/Image
+      Enabled: false
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: front_left
+      Normalize Range: true
+      Topic:
+        Depth: 5
+        Durability Policy: System Default
+        History Policy: System Default
+        Reliability Policy: System Default
+        Value: /camera/frontleft/image
+      Value: false
+    - Class: rviz_default_plugins/Image
+      Enabled: false
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: right
+      Normalize Range: true
+      Topic:
+        Depth: 5
+        Durability Policy: System Default
+        History Policy: System Default
+        Reliability Policy: System Default
+        Value: /camera/right/image
+      Value: false
+    - Class: rviz_default_plugins/Image
+      Enabled: false
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: left
+      Normalize Range: true
+      Topic:
+        Depth: 5
+        Durability Policy: System Default
+        History Policy: System Default
+        Reliability Policy: System Default
+        Value: /camera/left/image
+      Value: false
+    - Class: rviz_default_plugins/Image
+      Enabled: true
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: back
+      Normalize Range: true
+      Topic:
+        Depth: 5
+        Durability Policy: System Default
+        History Policy: System Default
+        Reliability Policy: System Default
+        Value: /camera/back/image
+      Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 10
-        Min Value: -10
+        Max Value: 1.6173044443130493
+        Min Value: -1.1247340440750122
         Value: true
       Axis: Z
       Channel Name: intensity
       Class: rviz_default_plugins/PointCloud2
       Color: 255; 255; 255
-      Color Transformer: Intensity
+      Color Transformer: AxisColor
+      Decay Time: 0
+      Enabled: false
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: horizontal_cloud
+      Position Transformer: XYZ
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
+      Topic:
+        Depth: 5
+        Durability Policy: System Default
+        Filter size: 10
+        History Policy: System Default
+        Reliability Policy: System Default
+        Value: /horizontal_laser_3d
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: false
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 1.6253762245178223
+        Min Value: -1.1774516105651855
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz_default_plugins/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: AxisColor
+      Decay Time: 0
+      Enabled: false
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: vertical_cloud
+      Position Transformer: XYZ
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
+      Topic:
+        Depth: 5
+        Durability Policy: System Default
+        Filter size: 10
+        History Policy: System Default
+        Reliability Policy: System Default
+        Value: /vertical_laser_3d
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: false
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 1.89580500125885
+        Min Value: -1.2225465774536133
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz_default_plugins/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: AxisColor
+      Decay Time: 0
+      Enabled: false
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: right_cloud
+      Position Transformer: XYZ
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
+      Topic:
+        Depth: 5
+        Durability Policy: System Default
+        Filter size: 10
+        History Policy: System Default
+        Reliability Policy: System Default
+        Value: /points_right
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: false
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 0.9899972677230835
+        Min Value: -0.4894356429576874
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz_default_plugins/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: AxisColor
+      Decay Time: 0
+      Enabled: false
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: left_cloud
+      Position Transformer: XYZ
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
+      Topic:
+        Depth: 5
+        Durability Policy: System Default
+        Filter size: 10
+        History Policy: System Default
+        Reliability Policy: System Default
+        Value: /points_left
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: false
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 0.4082806706428528
+        Min Value: -0.08918146789073944
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz_default_plugins/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: AxisColor
       Decay Time: 0
       Enabled: false
       Invert Rainbow: false
@@ -207,7 +460,7 @@ Visualization Manager:
       Max Intensity: 100
       Min Color: 0; 0; 0
       Min Intensity: 46
-      Name: PointCloud2
+      Name: back_cloud
       Position Transformer: XYZ
       Selectable: true
       Size (Pixels): 3
@@ -215,54 +468,14 @@ Visualization Manager:
       Style: Flat Squares
       Topic:
         Depth: 5
-        Durability Policy: Volatile
+        Durability Policy: System Default
         Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /horizontal_laser_3d
+        History Policy: System Default
+        Reliability Policy: System Default
+        Value: /points_back
       Use Fixed Frame: true
       Use rainbow: true
       Value: false
-    - Alpha: 1
-      Buffer Length: 1
-      Class: rviz_default_plugins/Path
-      Color: 25; 255; 0
-      Enabled: true
-      Head Diameter: 0.30000001192092896
-      Head Length: 0.20000000298023224
-      Length: 0.30000001192092896
-      Line Style: Lines
-      Line Width: 0.029999999329447746
-      Name: Path
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Pose Color: 255; 85; 255
-      Pose Style: None
-      Radius: 0.029999999329447746
-      Shaft Diameter: 0.10000000149011612
-      Shaft Length: 0.10000000149011612
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /received_global_plan
-      Value: true
-    - Class: rviz_default_plugins/MarkerArray
-      Enabled: true
-      Name: MarkerArray
-      Namespaces:
-        {}
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /explore/frontiers
-      Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -273,65 +486,7 @@ Visualization Manager:
       Channel Name: intensity
       Class: rviz_default_plugins/PointCloud2
       Color: 255; 255; 255
-      Color Transformer: Intensity
-      Decay Time: 0
-      Enabled: true
-      Invert Rainbow: false
-      Max Color: 255; 255; 255
-      Max Intensity: 82
-      Min Color: 0; 0; 0
-      Min Intensity: 3
-      Name: 3D_laser
-      Position Transformer: XYZ
-      Selectable: true
-      Size (Pixels): 3
-      Size (m): 0.009999999776482582
-      Style: Flat Squares
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /vertical_laser_3d
-      Use Fixed Frame: true
-      Use rainbow: true
-      Value: true
-    - Class: rviz_default_plugins/MarkerArray
-      Enabled: false
-      Name: MarkerArray
-      Namespaces:
-        {}
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /constraint_list
-      Value: false
-    - Class: rviz_default_plugins/MarkerArray
-      Enabled: true
-      Name: Trajectory
-      Namespaces:
-        Trajectory 0: true
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /trajectory_node_list
-      Value: true
-    - Alpha: 1
-      Autocompute Intensity Bounds: true
-      Autocompute Value Bounds:
-        Max Value: 13.619855880737305
-        Min Value: -11.31574821472168
-        Value: true
-      Axis: Z
-      Channel Name: intensity
-      Class: rviz_default_plugins/PointCloud2
-      Color: 192; 28; 40
-      Color Transformer: FlatColor
+      Color Transformer: ""
       Decay Time: 0
       Enabled: true
       Invert Rainbow: false
@@ -339,26 +494,26 @@ Visualization Manager:
       Max Intensity: 4096
       Min Color: 0; 0; 0
       Min Intensity: 0
-      Name: Walls
-      Position Transformer: XYZ
+      Name: PointCloud2
+      Position Transformer: ""
       Selectable: true
       Size (Pixels): 3
-      Size (m): 0.10000000149011612
-      Style: Spheres
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
       Topic:
         Depth: 5
-        Durability Policy: Volatile
+        Durability Policy: System Default
         Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /scan_matched_points2
+        History Policy: System Default
+        Reliability Policy: System Default
+        Value: /combo_cloud
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: horizontal_vlp16_link
+    Fixed Frame: base_link
     Frame Rate: 30
   Name: root
   Tools:
@@ -401,7 +556,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 153.4670867919922
+      Distance: 8.055411338806152
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -416,10 +571,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: -0.25979724526405334
+      Pitch: 0.564797043800354
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.058556247502565384
+      Yaw: 2.9917542934417725
     Saved: ~
 Window Geometry:
   Displays:
@@ -427,9 +582,7 @@ Window Geometry:
   Height: 1016
   Hide Left Dock: false
   Hide Right Dock: true
-  Image:
-    collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000400000000000001560000035afc020000000afb000000100044006900730070006c006100790073010000003d000002b5000000c900fffffffb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d00610067006501000002f80000009f0000002800fffffffb0000000a0049006d00610067006501000002d0000000c7000000000000000000000001000001000000035afc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d0000035a000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000736000000e6fc0100000002fb0000000a0049006d00610067006503000003420000024f000002870000017cfb0000000a00560069006500770073030000004e00000080000002e10000019700000003000005070000003efc0100000002fb0000000800540069006d0065010000000000000507000002fb00fffffffb0000000800540069006d00650100000000000004500000000000000000000003ab0000035a00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000400000000000001560000035afc020000000efb000000100044006900730070006c006100790073010000003d000002c4000000c900fffffffb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d006100670065010000022b0000009f0000000000000000fb00000008006200610063006b0100000307000000900000002800fffffffb00000008006c0065006600740000000301000000960000002800fffffffb0000000a0072006900670068007400000002ac000000eb0000002800fffffffb0000001400660072006f006e0074005f006c0065006600740000000282000001150000002800fffffffb0000001600660072006f006e0074005f0072006900670068007400000002d0000000c70000002800ffffff00000001000001000000035afc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d0000035a000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000736000000e6fc0100000002fb0000000a0049006d00610067006503000003420000024f000002870000017cfb0000000a00560069006500770073030000004e00000080000002e10000019700000003000007360000003efc0100000002fb0000000800540069006d0065010000000000000736000002fb00fffffffb0000000800540069006d00650100000000000004500000000000000000000005da0000035a00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -438,6 +591,16 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: true
-  Width: 1287
-  X: 137
+  Width: 1846
+  X: 74
   Y: 27
+  back:
+    collapsed: false
+  front_left:
+    collapsed: false
+  front_right:
+    collapsed: false
+  left:
+    collapsed: false
+  right:
+    collapsed: false

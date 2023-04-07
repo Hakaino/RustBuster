@@ -15,8 +15,6 @@ def generate_launch_description():
 	# Create launch description
 	ld = LaunchDescription()
 	ld.add_action(DeclareLaunchArgument('use_sim_time', default_value="False", description='RustBuster main launcher'))
-	#ld.add_action((src='points_back', dst='horizontal_laser_3d'))
-	#ld.add_action(SetRemap(src='points_frontleft', dst='vertical_laser_3d'))
 
 	# Nav2
 	if 0:
@@ -97,7 +95,7 @@ def generate_launch_description():
 				}.items()
 		))
 
-	# going another way
+	"""going another way"""
 
 	# spot_description
 	if 0:
