@@ -4,7 +4,7 @@ from rclpy.node import Node
 from std_msgs.msg import Bool
 from sensor_msgs.msg import Imu, PointCloud2, PointField
 from nav_msgs.msg import Odometry
-from geometry_msgs.msg import TransformStamped
+from geometry_msgs.msg import TransformStamped, Vector3
 
 
 class RustBusterMain(Node):
@@ -13,38 +13,41 @@ class RustBusterMain(Node):
 		super().__init__('rustbuster_main')
 		# Subscribers
 		self.switch = self.create_subscription(Bool, "rustbuster/explore", self.control, 1)
-		self.odometry = self.create_subscription(Odometry, 'odometry', self.fake_imu, rclpy.qos.qos_profile_sensor_data)
-		self.back_points = self.create_subscription(PointCloud2, 'points_back', self.pub_imu,
-		                                            rclpy.qos.qos_profile_sensor_data)
+		self.odometry = self.create_subscription(Odometry, "odometry", self.fake_imu, rclpy.qos.qos_profile_sensor_data)
 
 		# Publishers
 		self.explore = self.create_publisher(Bool, "explore/resume", 1)
-		self.imu = self.create_publisher(Imu, "imu", 1)
-		self.broadcaster = tf2_ros.StaticTransformBroadcaster(self)
+		self.imu_pub = self.create_publisher(Imu, "imu", 10)
+		self.broadcaster = tf2_ros.TransformBroadcaster(self)
 
-		self.imu_t = TransformStamped()
-		self.imu_t.header.stamp = self.get_clock().now().to_msg()
-		self.imu_t.header.frame_id = "head"
-		self.imu_t._child_frame_id = "imu"
-		self.imu_t.transform.rotation.w = -1.0
-		self.broadcaster.sendTransform(self.imu_t)
-
-		self.imu_msg = None
+		e = Bool()
+		e.data = False
+		self.explore.publish(e) # start exploration here
 		self.get_logger().info("starting................................")
 
-	def pub_imu(self, pcd2):
-		self.imu.publish(self.imu_msg)
-
 	def fake_imu(self, odom):
-		# imu publish
-		self.imu_msg = Imu()
-		self.imu_msg.header = odom.header
-		self.imu_msg.header.frame_id = "imu"
-		self.imu_msg.orientation = odom.pose.pose.orientation
-		self.imu_msg.angular_velocity = odom.twist.twist.angular
-		self.imu_msg.linear_acceleration = odom.twist.twist.linear
+		#self.get_logger().info("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ")
+		# change odometry
+		t = TransformStamped()
+		t.header.stamp = odom.header.stamp
+		t.header.frame_id = "odom"
+		t.child_frame_id = "base_link"
+		t.transform.translation.x = odom.pose.pose.position.x
+		t.transform.translation.y = odom.pose.pose.position.y
+		t.transform.translation.z = odom.pose.pose.position.z
+		t.transform.rotation = odom.pose.pose.orientation
+		self.broadcaster.sendTransform(t)
 
-	# self.get_logger().info("X")
+		# imu publish
+		imu_msg = Imu()
+		imu_msg.header = odom.header
+		imu_msg.header.frame_id = "imu"
+		imu_msg.orientation = odom.pose.pose.orientation
+		imu_msg.angular_velocity = odom.twist.twist.angular
+		#imu_msg.angular_velocity.x = 0.1
+		imu_msg.linear_acceleration = odom.twist.twist.linear
+		#imu_msg.linear_acceleration.z = -10.0
+		self.imu_pub.publish(imu_msg)
 
 	def control(self, auto):
 		self.explore.publish(auto)
