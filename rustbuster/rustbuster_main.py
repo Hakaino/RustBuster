@@ -13,11 +13,13 @@ class RustBusterMain(Node):
 		super().__init__('rustbuster_main')
 		# Subscribers
 		self.switch = self.create_subscription(Bool, "rustbuster/explore", self.control, 1)
-		self.odometry = self.create_subscription(Odometry, "odometry", self.fake_imu, rclpy.qos.qos_profile_sensor_data)
+		self.odometry_sub = self.create_subscription(Odometry, "odometry", self.fake_odom, rclpy.qos.qos_profile_sensor_data)
+		#self.imu_sub = self.create_subscription(Imu, "/imu/data", self.cov_imu, 1)
 
 		# Publishers
 		self.explore = self.create_publisher(Bool, "explore/resume", 1)
-		self.imu_pub = self.create_publisher(Imu, "imu", 10)
+		#self.imu_pub = self.create_publisher(Imu, "imu", 10)
+		self.odom_pub = self.create_publisher(Odometry, "/odom", 1)
 		self.broadcaster = tf2_ros.TransformBroadcaster(self)
 
 		e = Bool()
@@ -62,6 +64,20 @@ class RustBusterMain(Node):
 		# self.teleop.stop()
 		# start teleop
 		self.get_logger().info("Change to " + msg + " mode")
+
+	def cov_imu(self, imu):
+		new_imu = imu
+		new_imu.orientation_covariance = imu.linear_acceleration_covariance
+		self.imu_pub.publish(new_imu)
+
+	def fake_odom(self, old_odom):
+		odom = Odometry()
+		odom.header.stamp = self.get_clock().now().to_msg()
+		odom.header.frame_id = "odom"
+		odom.child_frame_id = "camera_link"
+		odom.pose = old_odom.pose
+		odom.twist = old_odom.twist
+		self.odom_pub.publish(odom)
 
 
 def main(args=None):
