@@ -14,21 +14,28 @@ def generate_launch_description():
 
 	# Create launch description
 	ld = LaunchDescription()
-	ld.add_action(DeclareLaunchArgument('use_sim_time', default_value="False", description='RustBuster main launcher'))
+	ld.add_action(DeclareLaunchArgument('use_sim_time', default_value = "False", description='to change when using simulations or bag files'))
+	#ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
+	#		arguments=['.0', '.0', '0.0', '0.0', '0.0', '0.0' 'map', 'camera_link']))
+			#arguments=['2.0', '2.0', '0.0', '0.0', '0.0', '0.0', 'map', 'odom']))
+	#ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
+			#arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'base_link', 'body']))
+	#ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
+			#arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'body', 'imu']))
 
+	""" """
 	# Ros2 bag
-	if 0:
-		bag_path = "rosbag2_2023_04_12-14_17_02"
-		ld.add_action(actions.ExecuteProcess(
-				cmd=['ros2', 'bag', 'play', bag_path
-					, "--topics", "/odometry", "/points_back", "/points_left", "/points_right", "/points_frontleft"
-					, "/points_frontright", "/camera/back/image", "/robot_description", "/tf", "/tf_static"],
+	if 1:
+		bag_path = "rosbag2_2023_04_26-15_36_29"
+		ld.add_action(actions.ExecuteProcess(cmd=['ros2', 'bag', 'play', bag_path]))
+					#, "--topics", "/odometry", "/points_back", "/points_left", "/points_right", "/points_frontleft"
+					#, "/points_frontright", "/camera/back/image", "/robot_description", "/tf", "/tf_static"],
 					#, "/depth/frontleft/image", "/camera/frontleft/camera_info" ],
-				output='log'))
+					# output='log'))
 		#ld.add_action(actions.ExecuteProcess( cmd=['ros2', 'bag', 'record', "--all"], output='log' ))
 
 	# Nav2
-	if 1:
+	if 0:
 		nav2_launch = os.path.join(get_package_share_directory("nav2_bringup"), 'launch', "navigation_launch.py")
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(nav2_launch)))
 
@@ -41,6 +48,13 @@ def generate_launch_description():
 			output='screen',
 		))
 
+	# Spot driver
+	if 0:
+		spot_config = os.path.join(get_package_share_directory('rustbuster'), 'config/spot_config.yaml')
+		spot_launch = os.path.join(get_package_share_directory('spot_driver'), 'launch', "spot_driver.launch.py")
+		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(spot_launch),
+		                                       launch_arguments={"config_file": spot_config}.items()))
+
 	# RVIZ2
 	if 1:
 		ld.add_action(Node(
@@ -52,61 +66,43 @@ def generate_launch_description():
 				output='log'
 		))
 
-	# Spot driver
-	if 1:
-		spot_config = os.path.join(get_package_share_directory('rustbuster'), 'config/spot_config.yaml')
-		spot_launch = os.path.join(get_package_share_directory('spot_driver'), 'launch', "spot_driver.launch.py")
-		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(spot_launch),
-		                                       launch_arguments={"config_file": spot_config}.items()))
-
-		ld.add_action(Node(  # this can replace a lot
-				package='tf2_ros',
-				executable='static_transform_publisher',
-				arguments=['2.5', '2.5', '0', '0', '0', '0', '1', 'map', 'odom']
-		))
-
-		ld.add_action(Node(  # this can replace a lot
-				package='tf2_ros',
-				executable='static_transform_publisher',
-				arguments=['0', '0', '0', '0', '0', '0', '1', 'base_link', 'body']
-		))
-
-		ld.add_action(Node(  # this can replace a lot
-				package='tf2_ros',
-				executable='static_transform_publisher',
-				arguments=['0', '0', '0', '0', '0', '0', '1', 'body', 'imu']
-		))
-
 	# point_cloud_xyz
-	if 1:
+	if 0:
 		depth_to_launch = os.path.join(get_package_share_directory("spot_driver"), 'launch', "point_cloud_xyz.launch.py")
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(depth_to_launch)))
 
-	# Point cloud to laser scan
+	# ... to laser scan
 	if 0:
 		ld.add_action(Node(
-			package='pointcloud_to_laserscan',
-			executable='pointcloud_to_laserscan_node',
-			name='pointcloud_to_laserscan_node',
-			remappings=[('cloud_in', '/points_back'), ('scan', '/scan')],
+			package= "depthimage_to_laserscan",  #'pointcloud_to_laserscan',
+			executable= "depthimage_to_laserscan_node",  # "'pointcloud_to_laserscan_node',
+			name='laserscan_converter_node',
+			remappings=[('depth', '/camera/aligned_depth_to_color/image_raw'), ('depth_camera_info', 'camera/depth/camera_info')],
+			#remappings=[('cloud_in', '/points_left'), ('scan', '/scan')],
 			parameters=[{
-				'target_frame': 'body',
-				'transform_tolerance': 0.01,
-				'min_height': 0.0,
-				'max_height': 1.0,
-				'angle_min': -1.5708,  # -M_PI/2
-				'angle_max': 1.5708,  # M_PI/2
-				'angle_increment': 0.0087,  # M_PI/360.0
-				'scan_time': 0.3333,
-				'range_min': 0.3,
-				'range_max': 2.0,
-				'use_inf': True,
-				'inf_epsilon': 1.0
+				"scan_time": "0.5",
+				"range_min": "0.1",
+				"range_max": "10.0",
+				"scan_height": "0.5",
+				"output_frame": "camera_link"
+
+				#'target_frame': 'left_fisheye',
+				#'transform_tolerance': 0.01,
+				#'min_height': 0.1,
+				#'max_height': 1.0,
+				#'angle_min': -1.5708,  # -M_PI/2
+				#'angle_max': 1.5708,  # M_PI/2
+				#'angle_increment': 0.0087,  # M_PI/360.0
+				#'scan_time': 0.3333,
+				#'range_min': 0.0,
+				#'range_max': 40.0,
+				#'use_inf': True,
+				#'inf_epsilon': 1.0
 			}],
 		))
 
 	# cartographer
-	if 1:
+	if 0:
 		ld.add_action(Node(
 				package='cartographer_ros',
 				executable='cartographer_node',
@@ -138,23 +134,111 @@ def generate_launch_description():
 		))
 
 	"""going another way"""
-	# rtabmaps
-	if 0:
+	# rtabmaps (commented out parts to find the bug in the installation)
+	if 1:
+		parameters = [{
+			'frame_id': 'camera_link',
+			'subscribe_depth': True,
+			'approx_sync': True,
+			'wait_imu_to_init': True,
+            'subscribe_rgb':True,
+            'subscribe_scan':False,
+			'use_action_for_goal':True,
+            'qos_scan':2,
+	        'qos_imu':2,
+	        'Reg/Strategy':'1',
+	        'Reg/Force3DoF':'true',
+	        'RGBD/NeighborLinkRefining':'True',
+	        'Grid/RangeMin':'0.2', # ignore laser scan points on the robot itself
+	        'Optimizer/GravitySigma':'0' # Disable imu constraints (we are already in 2D)
+		}]
+
+		remappings = [
+			('imu', '/imu/data'),
+			('rgb/image', '/camera/color/image_raw'),
+			('rgb/camera_info', '/camera/color/camera_info'),
+			('depth/image', '/camera/aligned_depth_to_color/image_raw')]
+
+		# Map or Localization mode:
+		ld.add_action(Node(
+				package='rtabmap_slam', executable='rtabmap', output='screen',
+				parameters=parameters,
+				            #{'Mem/IncrementalMemory': 'False',
+				            #'Mem/InitWMWithAllNodes': 'True'}],
+				remappings=remappings
+		))
+
+		ld.add_action(Node(
+				package='rtabmap_viz', executable='rtabmap_viz', output='screen',
+				parameters=parameters,
+				remappings=remappings
+		))
+
+		# Compute quaternion of the IMU
+		ld.add_action(Node(
+					package='imu_filter_madgwick', executable='imu_filter_madgwick_node', output='screen',
+					parameters=[{'use_mag': False,
+					             "world_frame": "camera_link",
+					             "publish_tf": False
+					             }],
+					remappings=[('/imu/data_raw', '/camera/imu')
+					            #("/imu/data", "/rtabmap/imu")
+					            ]
+		))
+
+		"""ld.add_action(Node(
+				package='rtabmap_ros', executable='rgbd_odometry', output='screen',
+				parameters=parameters,
+				remappings=remappings))
+
+		ld.add_action(Node(
+				package='rtabmap_ros', executable='rtabmap', output='screen',
+				parameters=parameters,
+				remappings=remappings,
+				arguments=['-d']))
+
+		ld.add_action(Node(
+				package='rtabmap_ros', executable='rtabmapviz', output='screen',
+				parameters=parameters,
+				remappings=remappings))
+
+		# Because of this issue: https://github.com/IntelRealSense/realsense-ros/issues/2564
+		# Generate point cloud from not aligned depth
+		ld.add_action(Node(
+					package='rtabmap_ros', executable='point_cloud_xyz', output='screen',
+					parameters=[{'approx_sync': True}],
+					remappings=remappings
+		))
+
+
+			# Compute quaternion of the IMU
+		ld.add_action(Node(
+					package='imu_filter_madgwick', executable='imu_filter_madgwick_node', output='screen',
+					parameters=[{'use_mag': False,
+					             "world_frame": "enu",
+					             "publish_tf": False
+					             }],
+					remappings=[('/imu/data_raw', '/camera/imu'),
+					            ("/imu/data", "/rtabmap/imu")]
+		))"""
+
 		"""
-		ld.add_action(DeclareLaunchArgument("rtabmap_args", default_value="--delete_db_on_start"))
-		ld.add_action(DeclareLaunchArgument("rgb_topic", default_value="/camera/color/image_raw"))
-		ld.add_action(DeclareLaunchArgument("depth_topic", default_value="/camera/depth/image_rect_raw"))
-		ld.add_action(DeclareLaunchArgument("camera_info_topic", default_value="/camera/color/camera_info"))
-		ld.add_action(DeclareLaunchArgument("approx_sync", default_value="true"))"""
+			# Generate aligned depth to color camera from the point cloud above
+		ld.add_action(Node(
+					package='rtabmap_ros', executable='pointcloud_to_depthimage', output='screen',
+					parameters=[{'decimation': 2,
+					             'fixed_frame_id': 'camera_link',
+					             'fill_holes_size': 1}],
+					remappings=[('camera_info', '/camera/color/camera_info'),
+					            ('cloud', '/camera/cloud_from_depth'),
+					            ('image_raw', '/camera/realigned_depth_to_color/image_raw')]))
 
-		rtabmap_launch = os.path.join(get_package_share_directory('rtabmap_ros'), 'launch', "realsense_d400.launch.py")
-		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(rtabmap_launch)))
+		))
 
-		#rtabmap_args := "--delete_db_on_start" \
-		#rgb_topic := / kinect2 / qhd / image_color_rect \
-		#depth_topic := / kinect2 / qhd / image_depth_rect \
-		#camera_info_topic := / kinect2 / qhd / camera_info \
-		#approx_sync := false
+			# The IMU frame is mising in TF tree, add it:
+		ld.add_action(Node(
+					package='tf2_ros', executable='static_transform_publisher', output='screen',
+					arguments=['0', '0', '0', '0', '0', '0', 'camera_gyro_optical_frame', 'camera_imu_optical_frame']))"""
 
 	# spot_description
 	if 0:
@@ -162,7 +246,7 @@ def generate_launch_description():
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(spot_launch)))
 
 	# Realsense
-	if 0:
+	if 1:
 		realsense_launch = os.path.join(get_package_share_directory("realsense2_camera"), 'launch', "rs_launch.py")
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(realsense_launch)))
 
