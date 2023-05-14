@@ -15,24 +15,25 @@ def generate_launch_description():
 	# Create launch description
 	ld = LaunchDescription()
 	ld.add_action(DeclareLaunchArgument('use_sim_time', default_value = "False", description='to change when using simulations or bag files'))
-	#ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
-	#		arguments=['.0', '.0', '0.0', '0.0', '0.0', '0.0' 'map', 'camera_link']))
-			#arguments=['2.0', '2.0', '0.0', '0.0', '0.0', '0.0', 'map', 'odom']))
-	#ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
-			#arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'base_link', 'body']))
-	#ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
-			#arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'body', 'imu']))
+	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
+	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'map', 'odom']))
+	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
+	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'base_link', 'body']))
+	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
+	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'body', 'imu']))
+	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
+	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'imu', 'camera_link']))
 
-	""" """
+
 	# Ros2 bag
-	if 1:
+	if 0:
 		bag_path = "rosbag2_2023_04_26-15_36_29"
 		ld.add_action(actions.ExecuteProcess(cmd=['ros2', 'bag', 'play', bag_path]))
-					#, "--topics", "/odometry", "/points_back", "/points_left", "/points_right", "/points_frontleft"
-					#, "/points_frontright", "/camera/back/image", "/robot_description", "/tf", "/tf_static"],
-					#, "/depth/frontleft/image", "/camera/frontleft/camera_info" ],
-					# output='log'))
-		#ld.add_action(actions.ExecuteProcess( cmd=['ros2', 'bag', 'record', "--all"], output='log' ))
+		"""			, "--topics", "/odometry", "/points_back", "/points_left", "/points_right", "/points_frontleft"
+					, "/points_frontright", "/camera/back/image", "/robot_description", "/tf", "/tf_static"],
+					, "/depth/frontleft/image", "/camera/frontleft/camera_info" ],
+					 output='log'))
+		ld.add_action(actions.ExecuteProcess( cmd=['ros2', 'bag', 'record', "--all"], output='log' ))"""
 
 	# Nav2
 	if 0:
@@ -40,7 +41,7 @@ def generate_launch_description():
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(nav2_launch)))
 
 	# My controller
-	if 1:
+	if 0:
 		ld.add_action(Node(
 			package="rustbuster",
 			executable="rustbuster_init",
@@ -135,7 +136,7 @@ def generate_launch_description():
 
 	"""going another way"""
 	# rtabmaps (commented out parts to find the bug in the installation)
-	if 1:
+	if 0:
 		parameters = [{
 			'frame_id': 'camera_link',
 			'subscribe_depth': True,
@@ -157,7 +158,8 @@ def generate_launch_description():
 			('imu', '/imu/data'),
 			('rgb/image', '/camera/color/image_raw'),
 			('rgb/camera_info', '/camera/color/camera_info'),
-			('depth/image', '/camera/aligned_depth_to_color/image_raw')]
+			('depth/image', '/camera/aligned_depth_to_color/image_raw')
+		]
 
 		# Map or Localization mode:
 		ld.add_action(Node(
@@ -282,5 +284,30 @@ def generate_launch_description():
 				parameters=[os.path.join(get_package_share_directory('lidarslam'), 'param', 'lidarslam.yaml')],
 				output='screen'
 		))
+
+	# Apriltags
+	if 1:
+		ld.add_action(Node(
+				package="apriltag_ros",
+				executable='apriltag_node',
+				remappings=[
+					('image_rect', '/camera/color/image_raw'),
+					('camera_info', '/camera/color/camera_info'),
+				],
+				parameters=[{
+					"tag_family": "tag36h11",  # tag36h10, tag25h9, tag25h7 and tag16h5
+					"tag_border": 1,
+					"tag_threads": 4,
+					"tag_decimate": 1.0,
+					"tag_blur": 0.0,
+					"tag_refine_edges": 1,
+					"tag_refine_decode": 0,
+					"tag_refine_pose": 0,
+					"publish_tf": True,
+					"camera_frame": "camera_link",
+					"publish_tag_detections": True
+				}],
+		))
+
 
 	return ld
