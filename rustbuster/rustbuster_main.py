@@ -4,6 +4,7 @@ from rclpy.node import Node
 from std_msgs.msg import Bool
 from sensor_msgs.msg import Imu, PointCloud2, PointField
 from nav_msgs.msg import Odometry
+#from apriltag_ros.msg import AprilTagDetectionArray
 from geometry_msgs.msg import TransformStamped, Vector3
 
 
@@ -13,8 +14,8 @@ class RustBusterMain(Node):
 		super().__init__('rustbuster_main')
 		# Subscribers
 		self.switch = self.create_subscription(Bool, "rustbuster/explore", self.control, 1)
-		self.odometry_sub = self.create_subscription(Odometry, "odometry", self.fake_odom, rclpy.qos.qos_profile_sensor_data)
-		#self.imu_sub = self.create_subscription(Imu, "/imu/data", self.cov_imu, 1)
+		self.odometry_sub = self.create_subscription(Odometry, "odometry", self.fake_odom, 1)  #rclpy.qos.qos_profile_sensor_data)
+		#self.detections_sub = self.create_subscription(AprilTagDetectionArray, "/detections", self.apriltag_detections, 1)
 
 		# Publishers
 		self.explore = self.create_publisher(Bool, "explore/resume", 1)
@@ -23,33 +24,9 @@ class RustBusterMain(Node):
 		self.broadcaster = tf2_ros.TransformBroadcaster(self)
 
 		e = Bool()
-		e.data = False
+		e.data = True
 		self.explore.publish(e) # start exploration here
 		self.get_logger().info("starting................................")
-
-	def fake_imu(self, odom):
-		#self.get_logger().info("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ")
-		# change odometry
-		t = TransformStamped()
-		t.header.stamp = odom.header.stamp
-		t.header.frame_id = "odom"
-		t.child_frame_id = "base_link"
-		t.transform.translation.x = odom.pose.pose.position.x
-		t.transform.translation.y = odom.pose.pose.position.y
-		t.transform.translation.z = odom.pose.pose.position.z
-		t.transform.rotation = odom.pose.pose.orientation
-		self.broadcaster.sendTransform(t)
-
-		# imu publish
-		imu_msg = Imu()
-		imu_msg.header = odom.header
-		imu_msg.header.frame_id = "imu"
-		imu_msg.orientation = odom.pose.pose.orientation
-		imu_msg.angular_velocity = odom.twist.twist.angular
-		#imu_msg.angular_velocity.x = 0.1
-		imu_msg.linear_acceleration = odom.twist.twist.linear
-		#imu_msg.linear_acceleration.z = -10.0
-		self.imu_pub.publish(imu_msg)
 
 	def control(self, auto):
 		self.explore.publish(auto)
@@ -72,13 +49,25 @@ class RustBusterMain(Node):
 
 	def fake_odom(self, old_odom):
 		odom = Odometry()
-		odom.header.stamp = self.get_clock().now().to_msg()
+		odom.header.stamp = old_odom.header.stamp  # self.get_clock().now().to_msg()
 		odom.header.frame_id = "odom"
-		odom.child_frame_id = "camera_link"
+		odom.child_frame_id = "base_link"
 		odom.pose = old_odom.pose
 		odom.twist = old_odom.twist
 		self.odom_pub.publish(odom)
 
+		t = TransformStamped()
+		t.header.stamp = odom.header.stamp
+		t.header.frame_id = "odom"
+		t.child_frame_id = "base_link"
+		t.transform.translation.x = odom.pose.pose.position.x
+		t.transform.translation.y = odom.pose.pose.position.y
+		t.transform.translation.z = odom.pose.pose.position.z
+		t.transform.rotation = odom.pose.pose.orientation
+		self.broadcaster.sendTransform(t)
+
+	#def apriltag_detections(self, detection_array):
+	#	detection_array
 
 def main(args=None):
 	rclpy.init(args=args)

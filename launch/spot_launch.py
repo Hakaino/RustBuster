@@ -9,10 +9,6 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-	# Get configuration files
-	map_file = os.path.join(get_package_share_directory('rustbuster'), 'maps/map.yaml')
-
-	# Create launch description
 	ld = LaunchDescription()
 	ld.add_action(DeclareLaunchArgument('use_sim_time', default_value = "False", description='to change when using simulations or bag files'))
 	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
@@ -36,12 +32,12 @@ def generate_launch_description():
 		ld.add_action(actions.ExecuteProcess( cmd=['ros2', 'bag', 'record', "--all"], output='log' ))"""
 
 	# Nav2
-	if 0:
+	if 1:
 		nav2_launch = os.path.join(get_package_share_directory("nav2_bringup"), 'launch', "navigation_launch.py")
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(nav2_launch)))
 
 	# My controller
-	if 0:
+	if 1:
 		ld.add_action(Node(
 			package="rustbuster",
 			executable="rustbuster_init",
@@ -50,7 +46,7 @@ def generate_launch_description():
 		))
 
 	# Spot driver
-	if 0:
+	if 1:
 		spot_config = os.path.join(get_package_share_directory('rustbuster'), 'config/spot_config.yaml')
 		spot_launch = os.path.join(get_package_share_directory('spot_driver'), 'launch', "spot_driver.launch.py")
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(spot_launch),
@@ -129,17 +125,27 @@ def generate_launch_description():
 		))
 
 	# Explorer
-	if 0:
-		explore_launch = os.path.join(get_package_share_directory("explore_lite"), 'launch', "explore.launch.py")
-		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(explore_launch), launch_arguments={"headless": "true"}.items()
+	if 1:
+		config = os.path.join(get_package_share_directory("explore_lite"), "config", "params.yaml"
+		)
+
+		# Map fully qualified names to relative ones so the node's namespace can be prepended.
+		# In case of the transforms (tf), currently, there doesn't seem to be a better alternative
+		# https://github.com/ros/geometry2/issues/32
+		# https://github.com/ros/robot_state_publisher/pull/30
+
+		ld.add_action(Node(
+				package="explore_lite",
+				name="explore_node",
+				executable="explore",
+				parameters=[os.path.join(get_package_share_directory("rustbuster"), "config", "front_expl_param.yaml")]
 		))
 
-	"""going another way"""
 	# rtabmaps (commented out parts to find the bug in the installation)
-	if 0:
+	if 1:
 		parameters = [{
 			'frame_id': 'camera_link',
-			'subscribe_depth': True,
+			'subscribe_depth':True,
 			'approx_sync': True,
 			'wait_imu_to_init': True,
             'subscribe_rgb':True,
@@ -151,7 +157,8 @@ def generate_launch_description():
 	        'Reg/Force3DoF':'true',
 	        'RGBD/NeighborLinkRefining':'True',
 	        'Grid/RangeMin':'0.2', # ignore laser scan points on the robot itself
-	        'Optimizer/GravitySigma':'0' # Disable imu constraints (we are already in 2D)
+	        'Optimizer/GravitySigma':'0', # Disable imu constraints (we are already in 2D)
+			"args":"--delete_db_on_start"
 		}]
 
 		remappings = [
@@ -163,7 +170,7 @@ def generate_launch_description():
 
 		# Map or Localization mode:
 		ld.add_action(Node(
-				package='rtabmap_slam', executable='rtabmap', output='screen',
+				package='rtabmap_slam', executable='rtabmap', #output='screen',
 				parameters=parameters,
 				            #{'Mem/IncrementalMemory': 'False',
 				            #'Mem/InitWMWithAllNodes': 'True'}],
@@ -171,76 +178,20 @@ def generate_launch_description():
 		))
 
 		ld.add_action(Node(
-				package='rtabmap_viz', executable='rtabmap_viz', output='screen',
+				package='rtabmap_viz', executable='rtabmap_viz', output='log',
 				parameters=parameters,
 				remappings=remappings
 		))
 
 		# Compute quaternion of the IMU
 		ld.add_action(Node(
-					package='imu_filter_madgwick', executable='imu_filter_madgwick_node', output='screen',
+					package='imu_filter_madgwick', executable='imu_filter_madgwick_node', #output='screen',
 					parameters=[{'use_mag': False,
 					             "world_frame": "camera_link",
 					             "publish_tf": False
 					             }],
-					remappings=[('/imu/data_raw', '/camera/imu')
-					            #("/imu/data", "/rtabmap/imu")
-					            ]
+					remappings=[('/imu/data_raw', '/camera/imu')]
 		))
-
-		"""ld.add_action(Node(
-				package='rtabmap_ros', executable='rgbd_odometry', output='screen',
-				parameters=parameters,
-				remappings=remappings))
-
-		ld.add_action(Node(
-				package='rtabmap_ros', executable='rtabmap', output='screen',
-				parameters=parameters,
-				remappings=remappings,
-				arguments=['-d']))
-
-		ld.add_action(Node(
-				package='rtabmap_ros', executable='rtabmapviz', output='screen',
-				parameters=parameters,
-				remappings=remappings))
-
-		# Because of this issue: https://github.com/IntelRealSense/realsense-ros/issues/2564
-		# Generate point cloud from not aligned depth
-		ld.add_action(Node(
-					package='rtabmap_ros', executable='point_cloud_xyz', output='screen',
-					parameters=[{'approx_sync': True}],
-					remappings=remappings
-		))
-
-
-			# Compute quaternion of the IMU
-		ld.add_action(Node(
-					package='imu_filter_madgwick', executable='imu_filter_madgwick_node', output='screen',
-					parameters=[{'use_mag': False,
-					             "world_frame": "enu",
-					             "publish_tf": False
-					             }],
-					remappings=[('/imu/data_raw', '/camera/imu'),
-					            ("/imu/data", "/rtabmap/imu")]
-		))"""
-
-		"""
-			# Generate aligned depth to color camera from the point cloud above
-		ld.add_action(Node(
-					package='rtabmap_ros', executable='pointcloud_to_depthimage', output='screen',
-					parameters=[{'decimation': 2,
-					             'fixed_frame_id': 'camera_link',
-					             'fill_holes_size': 1}],
-					remappings=[('camera_info', '/camera/color/camera_info'),
-					            ('cloud', '/camera/cloud_from_depth'),
-					            ('image_raw', '/camera/realigned_depth_to_color/image_raw')]))
-
-		))
-
-			# The IMU frame is mising in TF tree, add it:
-		ld.add_action(Node(
-					package='tf2_ros', executable='static_transform_publisher', output='screen',
-					arguments=['0', '0', '0', '0', '0', '0', 'camera_gyro_optical_frame', 'camera_imu_optical_frame']))"""
 
 	# spot_description
 	if 0:
@@ -286,7 +237,7 @@ def generate_launch_description():
 		))
 
 	# Apriltags
-	if 1:
+	if 0:
 		ld.add_action(Node(
 				package="apriltag_ros",
 				executable='apriltag_node',
