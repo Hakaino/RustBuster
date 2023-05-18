@@ -1,6 +1,6 @@
 /**:
   ros__parameters:
-    robot_base_frame: gpe
+    robot_base_frame: base_link
     return_to_init: true
     costmap_topic: /grid_prob_map  # /grid_prob_map /map
     costmap_updates_topic: /grid_prob_map_updates  # /grid_prob_map_updates /map_updates
@@ -13,3 +13,5 @@
     transform_tolerance: 0.3
     min_frontier_size: 0.01
     use_sim_time: false
+    track_unknown_space: true
+    allow_unknown: true

@@ -17,9 +17,9 @@ def generate_launch_description():
 	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
 	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'base_link', 'body']))
 	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
-	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'vision', 'imu']))
+	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'body', 'camera_link'])) # above front_rail would be more correct
 	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
-	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'imu', 'camera_link']))
+	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'camera_link', "imu"]))
 	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
 	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'camera_gyro_optical_frame', 'camera_imu_optical_frame']))
 
@@ -79,25 +79,17 @@ def generate_launch_description():
 	# rtabmaps (commented out parts to find the bug in the installation)
 	if 1:
 		parameters = [{
-			'frame_id': 'camera_link',
+			'frame_id':'base_link',
+			"map_always_update":True,
 			'subscribe_depth':True,
-			'approx_sync': True,
-			'wait_imu_to_init': True,
+			'approx_sync':True,
+			'wait_imu_to_init':True,
             'subscribe_rgb':True,
             'subscribe_scan':False,
 			'use_action_for_goal':True,
             'qos_scan':2,
 	        'qos_imu':2,
-	        'Reg/Strategy':'1',
-	        'Reg/Force3DoF':'true',
-	        'RGBD/NeighborLinkRefining':'True',
-	        'Grid/RangeMin':'0.2', # ignore laser scan points on the robot itself
-	        'Optimizer/GravitySigma':'0', # Disable imu constraints (we are already in 2D)
-			"rtabmap_args":"--delete_db_on_start",
-			"proj_max_ground_angle":"45",
-			#"map_always_update": "True",
-			#"Vis/CorType": 1
-			#"Odom/ResetCountdown":"1"
+			"rtabmap_args":os.path.join(get_package_share_directory('rustbuster'), 'config/rtabmap.ini')
 		}]
 
 		remappings = [
