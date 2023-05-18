@@ -1,16 +1,15 @@
 /**:
   ros__parameters:
-    robot_base_frame: base_link
+    robot_base_frame: gpe
     return_to_init: true
-    #costmap_topic: /grid_prob_map
-    #costmap_updates_topic: /grid_prob_map_updates
-    costmap_topic: /map
-    costmap_updates_topic: /map_updates
+    costmap_topic: /grid_prob_map  # /grid_prob_map /map
+    costmap_updates_topic: /grid_prob_map_updates  # /grid_prob_map_updates /map_updates
     visualize: true
-    planner_frequency: 0.15
-    progress_timeout: 30.0
-    potential_scale: 3.0
-    orientation_scale: 0.0
-    gain_scale: 1.0
+    planner_frequency: 1.0
+    progress_timeout: 3.0
+    potential_scale: 10.0
+    orientation_scale: 5.0
+    gain_scale: 5.0
     transform_tolerance: 0.3
-    min_frontier_size: 0.75
+    min_frontier_size: 0.01
+    use_sim_time: false
