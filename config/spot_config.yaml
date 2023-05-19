@@ -20,7 +20,7 @@
       check_subscribers: 100.0
     auto_claim: True
     auto_power_on: True
-    auto_stand: True
+    auto_stand: False
     start_estop: False
     deadzone: 0.05
     estop_timeout: 9.0

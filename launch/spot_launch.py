@@ -38,7 +38,7 @@ def generate_launch_description():
 		ld.add_action(actions.ExecuteProcess( cmd=['ros2', 'bag', 'record', "--all"], output='log' ))
 
 	# Nav2
-	if 0:
+	if 1:
 		nav2_launch = os.path.join(get_package_share_directory("nav2_bringup"), 'launch', "navigation_launch.py")
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(nav2_launch)))
 
@@ -52,7 +52,7 @@ def generate_launch_description():
 		))
 
 	# Spot driver
-	if 0:
+	if 1:
 		spot_config = os.path.join(get_package_share_directory('rustbuster'), 'config/spot_config.yaml')
 		spot_launch = os.path.join(get_package_share_directory('spot_driver'), 'launch', "spot_driver.launch.py")
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(spot_launch),
