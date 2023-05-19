@@ -15,9 +15,11 @@ def generate_launch_description():
 	#ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
 	#                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'map', 'odom']))
 	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
+	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', "odom", 'base_link']))
+	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
 	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'base_link', 'body']))
 	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
-	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'body', 'camera_link'])) # above front_rail would be more correct
+	                   arguments=['.0', '.03', '.0', '.0', '.0', '.0', 'base_link', 'camera_link'])) # above front_rail would be more correct
 	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
 	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'camera_link', "imu"]))
 	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
@@ -36,7 +38,7 @@ def generate_launch_description():
 		ld.add_action(actions.ExecuteProcess( cmd=['ros2', 'bag', 'record', "--all"], output='log' ))
 
 	# Nav2
-	if 1:
+	if 0:
 		nav2_launch = os.path.join(get_package_share_directory("nav2_bringup"), 'launch', "navigation_launch.py")
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(nav2_launch)))
 
@@ -50,7 +52,7 @@ def generate_launch_description():
 		))
 
 	# Spot driver
-	if 1:
+	if 0:
 		spot_config = os.path.join(get_package_share_directory('rustbuster'), 'config/spot_config.yaml')
 		spot_launch = os.path.join(get_package_share_directory('spot_driver'), 'launch', "spot_driver.launch.py")
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(spot_launch),
@@ -80,13 +82,21 @@ def generate_launch_description():
 	if 1:
 		parameters = [{
 			'frame_id':'base_link',
-			"map_always_update":True,
+			'visual_odometry': True,
+			'odom_frame_id': "odom",
+			'map_always_update':True,
+			#'subscribe_rgbd': True,
 			'subscribe_depth':True,
-			'approx_sync':True,
+			'approx_sync':False,
 			'wait_imu_to_init':True,
             'subscribe_rgb':True,
             'subscribe_scan':False,
 			'use_action_for_goal':True,
+			'cloud_noise_filtering_radius':0.05,
+			'cloud_noise_filtering_min_neighbors':2,
+			#'proj_max_ground_angle':45,
+			'proj_min_cluster_size':20,
+			'proj_max_ground_height':0.2,
             'qos_scan':2,
 	        'qos_imu':2,
 			"rtabmap_args":os.path.join(get_package_share_directory('rustbuster'), 'config/rtabmap.ini')
@@ -94,26 +104,18 @@ def generate_launch_description():
 
 		remappings = [
 			('imu', '/imu/data'),
-			('rgb/image', "/camera/infra1/image_rect_raw"),  # '/camera/color/image_raw'),
-			('rgb/camera_info', "/camera/infra1/camera_info"),  # '/camera/color/camera_info'),
-			('depth/image', '/camera/aligned_depth_to_color/image_raw')
+			('rgb/image', '/camera/color/image_raw'),  # "/camera/infra1/image_rect_raw"),  #
+			('rgb/camera_info', '/camera/color/camera_info'), # "/camera/infra1/camera_info"),  #
+			('depth/image', '/camera/aligned_depth_to_color/image_raw'),
+			('depth/image_info', '/camera/aligned_depth_to_color/image_raw_info')
 		]
 
 		# Map or Localization mode:
 		ld.add_action(Node(
-				package='rtabmap_slam', executable='rtabmap', #output='screen',
+				package='rtabmap_slam', executable='rtabmap', output='screen',
 				parameters=parameters,
 				            #{'Mem/IncrementalMemory': 'False',
 				            #'Mem/InitWMWithAllNodes': 'True'}],
-				remappings=remappings
-		))
-
-		# move into the known map:
-		ld.add_action(Node(
-				package='rtabmap_slam', executable='rtabmap',  # output='screen',
-				parameters=parameters,
-				# {'Mem/IncrementalMemory': 'False',
-				# 'Mem/InitWMWithAllNodes': 'True'}],
 				remappings=remappings
 		))
 
@@ -134,7 +136,7 @@ def generate_launch_description():
 		))
 
 	# spot_description
-	if 1:
+	if 0:
 		default_model_path = os.path.join(get_package_share_directory('spot_description'), 'urdf/spot.urdf.xacro')
 		ld.add_action(Node(
 				package='robot_state_publisher',
