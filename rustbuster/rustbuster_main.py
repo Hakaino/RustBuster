@@ -14,7 +14,7 @@ class RustBusterMain(Node):
 		super().__init__('rustbuster_main')
 		# Subscribers
 		self.switch = self.create_subscription(Bool, "rustbuster/explore", self.control, 1)
-		self.odometry_sub = self.create_subscription(Odometry, "odometry", self.fake_odom, 1)  #rclpy.qos.qos_profile_sensor_data)
+		#self.odometry_sub = self.create_subscription(Odometry, "odometry", self.fake_odom, 1)  #rclpy.qos.qos_profile_sensor_data)
 		#self.detections_sub = self.create_subscription(AprilTagDetectionArray, "/detections", self.apriltag_detections, 1)
 
 		# Publishers
