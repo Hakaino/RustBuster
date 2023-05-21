@@ -14,16 +14,17 @@ def generate_launch_description():
 	ld.add_action(DeclareLaunchArgument('use_sim_time', default_value = "False", description='to change when using simulations or bag files'))
 	#ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
 	#                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'map', 'odom']))
+
 	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
-	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', "odom", 'base_link']))
+	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'base_link', 'body']))
 	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
 	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'base_link', 'body']))
 	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
 	                   arguments=['.0', '.03', '.0', '.0', '.0', '.0', 'base_link', 'camera_link'])) # above front_rail would be more correct
-	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
+	"""ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
 	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'camera_link', "imu"]))
 	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
-	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'camera_gyro_optical_frame', 'camera_imu_optical_frame']))
+	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'camera_gyro_optical_frame', 'camera_imu_optical_frame']))"""
 
 
 	# Ros2 bag
@@ -38,7 +39,7 @@ def generate_launch_description():
 		ld.add_action(actions.ExecuteProcess( cmd=['ros2', 'bag', 'record', "--all"], output='log' ))
 
 	# Nav2
-	if 1:
+	if 0:
 		nav2_launch = os.path.join(get_package_share_directory("nav2_bringup"), 'launch', "navigation_launch.py")
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(nav2_launch)))
 
@@ -82,24 +83,27 @@ def generate_launch_description():
 	if 1:
 		parameters = [{
 			'frame_id':'base_link',
-			'visual_odometry': True,
+			'visual_odometry': False,
 			'odom_frame_id': "odom",
-			'map_always_update':True,
+			'map_always_update':False,
+			'wait_for_transform':0.5,
 			#'subscribe_rgbd': True,
-			'subscribe_depth':True,
-			'approx_sync':False,
+			#'subscribe_depth':True,
+			'approx_sync':True,
 			'wait_imu_to_init':True,
-            'subscribe_rgb':True,
-            'subscribe_scan':False,
-			'use_action_for_goal':True,
+            #'subscribe_rgb':True,
+            #'subscribe_scan':False,
+			#'use_action_for_goal':True,
 			'cloud_noise_filtering_radius':0.05,
 			'cloud_noise_filtering_min_neighbors':2,
-			#'proj_max_ground_angle':45,
+
+			'proj_max_ground_angle':45,
 			'proj_min_cluster_size':20,
 			'proj_max_ground_height':0.2,
-            'qos_scan':2,
-	        'qos_imu':2,
-			"rtabmap_args":os.path.join(get_package_share_directory('rustbuster'), 'config/rtabmap.ini')
+
+            #'qos_scan':2,
+	        #'qos_imu':2,
+			"rtabmap_args": "-d " + os.path.join(get_package_share_directory('rustbuster'), 'config/rtabmap.ini')
 		}]
 
 		remappings = [
@@ -129,7 +133,7 @@ def generate_launch_description():
 		ld.add_action(Node(
 					package='imu_filter_madgwick', executable='imu_filter_madgwick_node', #output='screen',
 					parameters=[{'use_mag': False,
-					             "world_frame": "camera_link",
+					             "world_frame": "odom",
 					             "publish_tf": False
 					             }],
 					remappings=[('/imu/data_raw', '/camera/imu')]
