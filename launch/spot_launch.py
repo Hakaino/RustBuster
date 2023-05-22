@@ -16,15 +16,13 @@ def generate_launch_description():
 	#                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'map', 'odom']))
 
 	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
-	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'base_link', 'body']))
+	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'odom', 'base_link']))
 	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
 	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'base_link', 'body']))
 	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
-	                   arguments=['.0', '.03', '.0', '.0', '.0', '.0', 'base_link', 'camera_link'])) # above front_rail would be more correct
-	"""ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
-	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'camera_link', "imu"]))
+	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'base_link', 'camera_link']))
 	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
-	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'camera_gyro_optical_frame', 'camera_imu_optical_frame']))"""
+	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'camera_link', "camera_imu_optical_frame"]))
 
 
 	# Ros2 bag
@@ -80,7 +78,7 @@ def generate_launch_description():
 		))
 
 	# rtabmaps (commented out parts to find the bug in the installation)
-	if 1:
+	if 0:
 		parameters = [{
 			'frame_id':'base_link',
 			'visual_odometry': False,
@@ -94,16 +92,16 @@ def generate_launch_description():
             #'subscribe_rgb':True,
             #'subscribe_scan':False,
 			#'use_action_for_goal':True,
-			'cloud_noise_filtering_radius':0.05,
-			'cloud_noise_filtering_min_neighbors':2,
+			#'cloud_noise_filtering_radius':0.05,
+			#'cloud_noise_filtering_min_neighbors':2,
 
-			'proj_max_ground_angle':45,
-			'proj_min_cluster_size':20,
-			'proj_max_ground_height':0.2,
+			#'proj_max_ground_angle':45,
+			#'proj_min_cluster_size':20,
+			#'proj_max_ground_height':0.2,
 
             #'qos_scan':2,
 	        #'qos_imu':2,
-			"rtabmap_args": "-d " + os.path.join(get_package_share_directory('rustbuster'), 'config/rtabmap.ini')
+			"rtabmap_args":os.path.join(get_package_share_directory('rustbuster'), 'config/rtabmap.ini')  # "-d " +
 		}]
 
 		remappings = [
@@ -118,8 +116,6 @@ def generate_launch_description():
 		ld.add_action(Node(
 				package='rtabmap_slam', executable='rtabmap', output='screen',
 				parameters=parameters,
-				            #{'Mem/IncrementalMemory': 'False',
-				            #'Mem/InitWMWithAllNodes': 'True'}],
 				remappings=remappings
 		))
 

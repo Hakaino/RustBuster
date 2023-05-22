@@ -19,19 +19,38 @@ class RustBusterMain(Node):
 		self.switch = self.create_subscription(Bool, "rustbuster/explore", self.control, 1)
 		self.odometry_sub = self.create_subscription(Odometry, "odometry", self.fake_odom, 10)  #rclpy.qos.qos_profile_sensor_data)
 		#self.detections_sub = self.create_subscription(AprilTagDetectionArray, "/detections", self.apriltag_detections, 1)
-		self.tf_buffer = Buffer()
-		self.tf_listener = TransformListener(self.tf_buffer, self)
 
 		# Publishers
 		self.explore = self.create_publisher(Bool, "explore/resume", 1)
 		#self.imu_pub = self.create_publisher(Imu, "imu", 10)
-		self.odom_pub = self.create_publisher(Odometry, "odom", 10)
-		self.broadcaster = tf2_ros.TransformBroadcaster(self)
+
+		# Odometry
+		self.tf_buffer = Buffer()
+		self.tf_listener = TransformListener(self.tf_buffer, self)
+		self.odom_msg = Odometry()
+		self.odom_msg_pub = self.create_publisher(Odometry, "odom", 10)
+		self.odom_tf = TransformStamped()
+		self.odom_tf_pub = tf2_ros.TransformBroadcaster(self)
+
 
 		e = Bool()
 		e.data = True
 		self.explore.publish(e) # start exploration here
 		self.get_logger().info("starting................................")
+		self.timer = self.create_timer(0.1, self.main_loop)
+
+	def main_loop(self):
+		try:  # use spots visual odometry transform
+			# tf2 odom
+			odom_tf2 = self.tf_buffer.lookup_transform("vision", "body", rclpy.time.Time())
+			odom_tf2.header.frame_id = "odom"
+			odom_tf2.child_frame_id = "base_link"
+			odom_tf2.header.stamp = self.get_clock().now().to_msg()
+			self.odom_tf_pub.sendTransform(odom_tf2)
+		except TransformException as ex:
+			self.get_logger().info(f'Could not transform {"vision"} to {"base_link"}: {ex}')
+		#self.odom_msg.header.stamp = self.get_clock().now()
+		#self.odom_msg_pub.publish(self.odom_msg)
 
 	def control(self, auto):
 		self.explore.publish(auto)
@@ -53,23 +72,13 @@ class RustBusterMain(Node):
 		self.imu_pub.publish(new_imu)
 
 	def fake_odom(self, old_odom):
-		try:
-			odom = Odometry()
-			odom.header.stamp = old_odom.header.stamp  # self.get_clock().now().to_msg()
-			odom.header.frame_id = "odom"
-			odom.child_frame_id = "base_link"
-			odom.pose = old_odom.pose
-			odom.twist = old_odom.twist
-			self.odom_pub.publish(odom)
-
-			# use spots visual odometry transform
-			t = self.tf_buffer.lookup_transform("vision", "base_link", rclpy.time.Time())
-			#t.header.stamp = odom.header.stamp
-			t.header.frame_id = "odom"
-			t.child_frame_id = "base_link"
-			self.broadcaster.sendTransform(t)
-		except TransformException as ex:
-			self.get_logger().info(f'Could not transform {"vision"} to {"base_link"}: {ex}')
+		# odom messages
+		self.odom_msg.header.stamp = old_odom.header.stamp  # self.get_clock().now().to_msg()
+		self.odom_msg.header.frame_id = "odom"
+		self.odom_msg.child_frame_id = "base_link"
+		self.odom_msg.pose = old_odom.pose
+		self.odom_msg.twist = old_odom.twist
+		self.odom_msg_pub.publish(self.odom_msg)
 
 
 	#def apriltag_detections(self, detection_array):
