@@ -9,6 +9,9 @@ from geometry_msgs.msg import TransformStamped, Vector3
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 from tf2_ros import TransformException
+#from tf2_ros import quaternion_from_euler, quaternion_multiply
+import math
+import numpy as np
 
 
 class RustBusterMain(Node):
@@ -17,12 +20,13 @@ class RustBusterMain(Node):
 		super().__init__('rustbuster_main')
 		# Subscribers
 		self.switch = self.create_subscription(Bool, "rustbuster/explore", self.control, 1)
-		self.odometry_sub = self.create_subscription(Odometry, "odometry", self.fake_odom, 10)  #rclpy.qos.qos_profile_sensor_data)
+		#self.odometry_sub = self.create_subscription(Odometry, "odometry", self.fake_odom, 10)  #rclpy.qos.qos_profile_sensor_data)
 		#self.detections_sub = self.create_subscription(AprilTagDetectionArray, "/detections", self.apriltag_detections, 1)
+		self.detections_sub = self.create_subscription(Imu, "/imu/data", self.cov_imu, 1)
 
 		# Publishers
 		self.explore = self.create_publisher(Bool, "explore/resume", 1)
-		#self.imu_pub = self.create_publisher(Imu, "imu", 10)
+		self.imu_pub = self.create_publisher(Imu, "my_imu", 10)
 
 		# Odometry
 		self.tf_buffer = Buffer()
@@ -30,27 +34,37 @@ class RustBusterMain(Node):
 		self.odom_msg = Odometry()
 		self.odom_msg_pub = self.create_publisher(Odometry, "odom", 10)
 		self.odom_tf = TransformStamped()
-		self.odom_tf_pub = tf2_ros.TransformBroadcaster(self)
+		self.base_link_tf = TransformStamped()
+		self.tf_pub = tf2_ros.TransformBroadcaster(self)
 
 
 		e = Bool()
 		e.data = True
 		self.explore.publish(e) # start exploration here
-		self.get_logger().info("starting................................")
+		self.get_logger().info(20 * "#" + 2 * "\n#" + "\n\tstarting\t\n" + 2 * "\n#" + 20 * "#")
 		self.timer = self.create_timer(0.1, self.main_loop)
 
 	def main_loop(self):
 		try:  # use spots visual odometry transform
 			# tf2 odom
 			odom_tf2 = self.tf_buffer.lookup_transform("vision", "body", rclpy.time.Time())
+			odom_tf2.header.stamp = self.get_clock().now().to_msg()
 			odom_tf2.header.frame_id = "odom"
 			odom_tf2.child_frame_id = "base_link"
-			odom_tf2.header.stamp = self.get_clock().now().to_msg()
-			self.odom_tf_pub.sendTransform(odom_tf2)
+			z = odom_tf2.transform.translation.z
+			odom_tf2.transform.translation.z = 0.0
+			self.tf_pub.sendTransform(odom_tf2)
+
+			# base_link to be used by rtabmap must be a projection of body on the floor(Z=0)
+			base_link_tf2 = TransformStamped()
+			base_link_tf2.header.stamp = self.get_clock().now().to_msg()
+			base_link_tf2.header.frame_id = "base_link"
+			base_link_tf2.child_frame_id = "body"
+			base_link_tf2.transform.translation.z = z
+			self.tf_pub.sendTransform(base_link_tf2)
+
 		except TransformException as ex:
 			self.get_logger().info(f'Could not transform {"vision"} to {"base_link"}: {ex}')
-		#self.odom_msg.header.stamp = self.get_clock().now()
-		#self.odom_msg_pub.publish(self.odom_msg)
 
 	def control(self, auto):
 		self.explore.publish(auto)
@@ -68,17 +82,37 @@ class RustBusterMain(Node):
 
 	def cov_imu(self, imu):
 		new_imu = imu
-		new_imu.orientation_covariance = imu.linear_acceleration_covariance
+		ax = imu.angular_velocity.x
+		ay = imu.angular_velocity.y
+		az = imu.angular_velocity.z
+		lx = imu.linear_acceleration.x
+		ly = imu.linear_acceleration.y
+		lz = imu.linear_acceleration.z
+
+		new_imu.angular_velocity.x = az
+		new_imu.angular_velocity.y = ax
+		new_imu.angular_velocity.z = ay
+		new_imu.linear_acceleration.x = lz
+		new_imu.linear_acceleration.y = lx
+		new_imu.linear_acceleration.z = ly
+
 		self.imu_pub.publish(new_imu)
 
 	def fake_odom(self, old_odom):
 		# odom messages
-		self.odom_msg.header.stamp = old_odom.header.stamp  # self.get_clock().now().to_msg()
-		self.odom_msg.header.frame_id = "odom"
-		self.odom_msg.child_frame_id = "base_link"
-		self.odom_msg.pose = old_odom.pose
-		self.odom_msg.twist = old_odom.twist
-		self.odom_msg_pub.publish(self.odom_msg)
+		try:
+			self.odom_msg = old_odom  # self.get_clock().now().to_msg()
+			self.odom_msg.header.frame_id = "odom"
+			self.odom_msg.child_frame_id = "base_link"  # TODO: make the correct twists
+			odom_tf2 = self.tf_buffer.lookup_transform("vision", "base_link", rclpy.time.Time())
+			self.odom_msg.pose.pose.position.x = odom_tf2.transform.translation.x
+			self.odom_msg.pose.pose.position.y = odom_tf2.transform.translation.y
+			self.odom_msg.pose.pose.position.z = odom_tf2.transform.translation.z
+			self.odom_msg.pose.pose.orientation = odom_tf2.transform.rotation
+			self.odom_msg_pub.publish(self.odom_msg)
+
+		except TransformException as ex:
+			self.get_logger().info(" trouble in fake odom..............")
 
 
 	#def apriltag_detections(self, detection_array):

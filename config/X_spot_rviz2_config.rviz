@@ -4,9 +4,6 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Global Options1
-        - /Status1
-        - /TF1
         - /TF1/Frames1
         - /Odometry1/Shape1
       Splitter Ratio: 0.5883838534355164
@@ -127,7 +124,7 @@ Visualization Manager:
         back_fisheye:
           Value: false
         base_link:
-          Value: true
+          Value: false
         body:
           Value: false
         camera_accel_frame:
@@ -222,76 +219,75 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        body:
-          camera_imu_optical_frame:
-            {}
-          camera_link:
-            camera_accel_frame:
-              camera_accel_optical_frame:
-                {}
-            camera_aligned_depth_to_infra1_frame:
-              camera_infra1_optical_frame:
-                {}
-            camera_color_frame:
-              camera_color_optical_frame:
-                {}
-            camera_depth_frame:
-              camera_depth_optical_frame:
-                {}
-            camera_gyro_frame:
-              camera_gyro_optical_frame:
-                {}
-            camera_infra1_frame:
-              {}
-          flat_body:
-            {}
-          front_left_hip:
-            front_left_upper_leg:
-              front_left_lower_leg:
-                {}
-          front_rail:
-            {}
-          front_right_hip:
-            front_right_upper_leg:
-              front_right_lower_leg:
-                {}
-          head:
-            back:
-              back_fisheye:
-                {}
-            frontleft:
-              frontleft_fisheye:
-                {}
-            frontright:
-              frontright_fisheye:
-                {}
-            left:
-              left_fisheye:
-                {}
-            right:
-              right_fisheye:
-                {}
-          rear_left_hip:
-            rear_left_upper_leg:
-              rear_left_lower_leg:
-                {}
-          rear_rail:
-            {}
-          rear_right_hip:
-            rear_right_upper_leg:
-              rear_right_lower_leg:
-                {}
-          spot_base_link:
-            {}
-          spot_odom:
-            gpe:
-              {}
-          vision:
-            {}
         map:
           odom:
             base_link:
-              {}
+              body:
+                camera_link:
+                  camera_accel_frame:
+                    camera_accel_optical_frame:
+                      {}
+                  camera_aligned_depth_to_infra1_frame:
+                    camera_infra1_optical_frame:
+                      {}
+                  camera_color_frame:
+                    camera_color_optical_frame:
+                      {}
+                  camera_depth_frame:
+                    camera_depth_optical_frame:
+                      {}
+                  camera_gyro_frame:
+                    camera_gyro_optical_frame:
+                      {}
+                  camera_imu_optical_frame:
+                    {}
+                  camera_infra1_frame:
+                    {}
+                flat_body:
+                  {}
+                front_left_hip:
+                  front_left_upper_leg:
+                    front_left_lower_leg:
+                      {}
+                front_rail:
+                  {}
+                front_right_hip:
+                  front_right_upper_leg:
+                    front_right_lower_leg:
+                      {}
+                head:
+                  back:
+                    back_fisheye:
+                      {}
+                  frontleft:
+                    frontleft_fisheye:
+                      {}
+                  frontright:
+                    frontright_fisheye:
+                      {}
+                  left:
+                    left_fisheye:
+                      {}
+                  right:
+                    right_fisheye:
+                      {}
+                rear_left_hip:
+                  rear_left_upper_leg:
+                    rear_left_lower_leg:
+                      {}
+                rear_rail:
+                  {}
+                rear_right_hip:
+                  rear_right_upper_leg:
+                    rear_right_lower_leg:
+                      {}
+                spot_base_link:
+                  {}
+                spot_odom:
+                  gpe:
+                    {}
+                vision:
+                  {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -439,7 +435,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: vision
+    Fixed Frame: map
     Frame Rate: 30
   Name: root
   Tools:
@@ -482,33 +478,33 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 3.5322811603546143
+      Distance: 13.524956703186035
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.015561833046376705
-        Y: 0.09052789956331253
-        Z: 0.4305201470851898
+        X: -8.845210075378418
+        Y: 5.307837963104248
+        Z: -3.0995824337005615
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.22520282864570618
+      Pitch: 0.305203378200531
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.8468451499938965
+      Yaw: 5.756826877593994
     Saved: ~
 Window Geometry:
   Displays:
-    collapsed: false
+    collapsed: true
   Height: 1016
-  Hide Left Dock: false
+  Hide Left Dock: true
   Hide Right Dock: true
-  QMainWindow State: 000000ff00000000fd00000004000000000000018e0000035afc020000000dfb000000100044006900730070006c006100790073010000003d0000035a000000c900fffffffb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d006100670065010000022b0000009f0000000000000000fb00000008006200610063006b0000000162000001b00000000000000000fb0000000a0072006900670068007400000002ac000000eb0000000000000000fb0000001400660072006f006e0074005f006c0065006600740000000282000001150000000000000000fb0000001600660072006f006e0074005f0072006900670068007400000002f7000000a0000000000000000000000001000001000000035afc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d0000035a000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b20000000000000000000000020000039b000000e6fc0100000003fb00000012005200470042002d0069006e00740065006c0300000648000002e40000011a000000e6fb0000000a0049006d00610067006503000003420000024f000002870000017cfb0000000a00560069006500770073030000004e00000080000002e100000197000000030000039b0000003efc0100000002fb0000000800540069006d006501000000000000039b000002fb00fffffffb0000000800540069006d00650100000000000004500000000000000000000002070000035a00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000018e0000035afc020000000dfb000000100044006900730070006c006100790073000000003d0000035a000000c900fffffffb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d006100670065010000022b0000009f0000000000000000fb00000008006200610063006b0000000162000001b00000000000000000fb0000000a0072006900670068007400000002ac000000eb0000000000000000fb0000001400660072006f006e0074005f006c0065006600740000000282000001150000000000000000fb0000001600660072006f006e0074005f0072006900670068007400000002f7000000a0000000000000000000000001000001000000035afc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d0000035a000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b20000000000000000000000020000039b000000e6fc0100000003fb00000012005200470042002d0069006e00740065006c0300000648000002e40000011a000000e6fb0000000a0049006d00610067006503000003420000024f000002870000017cfb0000000a00560069006500770073030000004e00000080000002e100000197000000030000039b0000003efc0100000002fb0000000800540069006d006501000000000000039b000002fb00fffffffb0000000800540069006d006501000000000000045000000000000000000000039b0000035a00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   RGB-intel:
     collapsed: false
   Selection:
