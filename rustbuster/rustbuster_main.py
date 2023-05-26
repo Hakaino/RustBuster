@@ -47,7 +47,7 @@ class RustBusterMain(Node):
 	def main_loop(self):
 		try:  # use spots visual odometry transform
 			# tf2 odom
-			odom_tf2 = self.tf_buffer.lookup_transform("vision", "body", rclpy.time.Time())
+			odom_tf2 = self.tf_buffer.lookup_transform("vision", "camera_link", rclpy.time.Time())
 			odom_tf2.header.stamp = self.get_clock().now().to_msg()
 			odom_tf2.header.frame_id = "odom"
 			odom_tf2.child_frame_id = "base_link"
@@ -59,7 +59,7 @@ class RustBusterMain(Node):
 			base_link_tf2 = TransformStamped()
 			base_link_tf2.header.stamp = self.get_clock().now().to_msg()
 			base_link_tf2.header.frame_id = "base_link"
-			base_link_tf2.child_frame_id = "body"
+			base_link_tf2.child_frame_id = "camera_link"
 			base_link_tf2.transform.translation.z = z
 			self.tf_pub.sendTransform(base_link_tf2)
 
@@ -82,19 +82,13 @@ class RustBusterMain(Node):
 
 	def cov_imu(self, imu):
 		new_imu = imu
-		ax = imu.angular_velocity.x
-		ay = imu.angular_velocity.y
-		az = imu.angular_velocity.z
-		lx = imu.linear_acceleration.x
-		ly = imu.linear_acceleration.y
-		lz = imu.linear_acceleration.z
+		new_imu.angular_velocity.x = imu.angular_velocity.z
+		new_imu.angular_velocity.y = imu.angular_velocity.x
+		new_imu.angular_velocity.z = imu.angular_velocity.y
 
-		new_imu.angular_velocity.x = az
-		new_imu.angular_velocity.y = ax
-		new_imu.angular_velocity.z = ay
-		new_imu.linear_acceleration.x = lz
-		new_imu.linear_acceleration.y = lx
-		new_imu.linear_acceleration.z = ly
+		new_imu.linear_acceleration.x = imu.linear_acceleration.z
+		new_imu.linear_acceleration.y = imu.linear_acceleration.x
+		new_imu.linear_acceleration.z = imu.linear_acceleration.y
 
 		self.imu_pub.publish(new_imu)
 

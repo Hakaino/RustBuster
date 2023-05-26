@@ -13,27 +13,18 @@ from math import pi
 def generate_launch_description():
 	ld = LaunchDescription()
 	ld.add_action(DeclareLaunchArgument('use_sim_time', default_value = "True", description='to change when using simulations or bag files'))
-	#ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
-	#                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'map', 'odom']))
-
-	#ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
-	#                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'base_link', 'body'])) # base link must be under body yet in the same plane as the ground
 	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
-	                   arguments=['.0', '.0', '.0', '.0', '.0', '.0', 'body', 'camera_link']))
-	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
-	                   arguments=['.0', '.0', '.0', '-1.57', '0.0', '.0', 'body', "camera_imu_optical_frame"]))
-
+	                   arguments=['-.45', '.0', '-.15', '.0', '-.1', '.0', 'camera_link', 'body']))
 
 	# Ros2 bag
 	if 0:
-		bag_path = "rosbag2_2023_05_22-17_07_25"
+		"""bag_path = "rosbag2_2023_05_22-17_07_25"
 		ld.add_action(actions.ExecuteProcess(cmd=['ros2', 'bag', 'play', '--clock 100', bag_path]))
-		"""			, "--topics", "/odometry", "/points_back", "/points_left", "/points_right", "/points_frontleft"
+					, "--topics", "/odometry", "/points_back", "/points_left", "/points_right", "/points_frontleft"
 					, "/points_frontright", "/camera/back/image", "/robot_description", "/tf", "/tf_static"],
 					, "/depth/frontleft/image", "/camera/frontleft/camera_info" ],
 					 output='log'))"""
-
-		#ld.add_action(actions.ExecuteProcess( cmd=['ros2', 'bag', 'record', "--all"], output='log' ))
+		ld.add_action(actions.ExecuteProcess( cmd=['ros2', 'bag', 'record', "--all"], output='screen' ))
 
 	# Nav2
 	if 0:
@@ -41,7 +32,7 @@ def generate_launch_description():
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(nav2_launch)))
 
 	# My controller
-	if 1:
+	if 0:
 		ld.add_action(Node(
 			package="rustbuster",
 			executable="rustbuster_init",
@@ -50,14 +41,14 @@ def generate_launch_description():
 		))
 
 	# Spot driver
-	if 1:
+	if 0:
 		spot_config = os.path.join(get_package_share_directory('rustbuster'), 'config/spot_config.yaml')
 		spot_launch = os.path.join(get_package_share_directory('spot_driver'), 'launch', "spot_driver.launch.py")
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(spot_launch),
 		                                       launch_arguments={"config_file": spot_config}.items()))
 
 	# RVIZ2
-	if 1:
+	if 0:
 		ld.add_action(Node(
 				package='rviz2',
 				namespace='rviz2',
@@ -76,7 +67,7 @@ def generate_launch_description():
 				parameters=[os.path.join(get_package_share_directory("rustbuster"), "config", "front_expl_param.yaml")]
 		))
 
-	# rtabmaps (commented out parts to find the bug in the installation)
+	# rtabmaps
 	if 1:
 		parameters = [{
 			'frame_id':'base_link',
@@ -100,7 +91,7 @@ def generate_launch_description():
 
             #'qos_scan':2,
 	        #'qos_imu':2,
-			"rtabmap_args":"-d " + os.path.join(get_package_share_directory('rustbuster'), 'config/rtabmap.ini')
+			"config_path":os.path.join(get_package_share_directory('rustbuster'), 'config/rtabmap.ini')
 		}]
 
 		remappings = [
@@ -109,6 +100,7 @@ def generate_launch_description():
 			('rgb/camera_info', '/camera/color/camera_info'), # "/camera/infra1/camera_info"),  #
 			('depth/image', '/camera/aligned_depth_to_color/image_raw'),
 			('depth/image_info', '/camera/aligned_depth_to_color/image_raw_info')
+
 		]
 
 		# Map or Localization mode:
@@ -118,11 +110,11 @@ def generate_launch_description():
 				remappings=remappings
 		))
 
-		ld.add_action(Node(
+		"""ld.add_action(Node(
 				package='rtabmap_viz', executable='rtabmap_viz', output='log',
 				parameters=parameters,
 				remappings=remappings
-		))
+		))"""
 
 		# Compute quaternion of the IMU
 		ld.add_action(Node(
@@ -144,7 +136,7 @@ def generate_launch_description():
 		))
 
 	# Realsense
-	if 1:
+	if 0:
 		realsense_launch = os.path.join(get_package_share_directory("rustbuster"), 'launch', "rs_launch.py")
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(realsense_launch)))
 
