@@ -12,6 +12,11 @@ from tf2_ros import TransformException
 #from tf2_ros import quaternion_from_euler, quaternion_multiply
 import math
 import numpy as np
+from example_interfaces.srv import AddTwoInts
+from std_srvs.srv import Trigger, SetBool
+from spot_msgs.msg import LeaseArray, LeaseResource
+from rclpy.callback_groups import ReentrantCallbackGroup
+import time
 
 
 class RustBusterMain(Node):
@@ -20,9 +25,8 @@ class RustBusterMain(Node):
 		super().__init__('rustbuster_main')
 		# Subscribers
 		self.switch = self.create_subscription(Bool, "rustbuster/explore", self.control, 1)
-		#self.odometry_sub = self.create_subscription(Odometry, "odometry", self.fake_odom, 10)  #rclpy.qos.qos_profile_sensor_data)
 		#self.detections_sub = self.create_subscription(AprilTagDetectionArray, "/detections", self.apriltag_detections, 1)
-		self.detections_sub = self.create_subscription(Imu, "/imu/data", self.cov_imu, 1)
+		self.imu_sub = self.create_subscription(Imu, "/imu/data", self.cov_imu, 1)
 
 		# Publishers
 		self.explore = self.create_publisher(Bool, "explore/resume", 1)
@@ -42,9 +46,39 @@ class RustBusterMain(Node):
 		e.data = True
 		self.explore.publish(e) # start exploration here
 		self.get_logger().info(20 * "#" + 2 * "\n#" + "\n\tstarting\t\n" + 2 * "\n#" + 20 * "#")
+
+		#self.lease_sub = self.create_subscription(LeaseArray, "status/leases", self.request_spot_lease, 1)
+		#self.claim_client = self.create_client(Trigger, "claim", callback_group=ReentrantCallbackGroup())
+
 		self.timer = self.create_timer(0.1, self.main_loop)
 
+
+	"""def request_spot_lease(self, lease_array):
+		for resource in lease_array.resources:
+			self.get_logger().info("lease client: %s" %resource.lease_owner.client_name)
+			self.get_logger().info("lease user: %s" %resource.lease_owner.user_name)
+
+			#clients
+			#ros_spotgaming-3:spot_ros2-167892
+			#bosdyn.android.spotapp bdb4de2162f9e6a8
+
+			# get spot lease
+			if not "ros_spotgaming-3:spot_ros2" in resource.lease_owner.client_name:
+				t = 10
+				self.get_logger().info("cut motor power or will regian lease in %ss" %str(t))
+				time.sleep(t) # sleep ts to cut motor power before it tries to regain lease
+				request = self.claim_client.call_async(Trigger.Request())
+				#x = request.done()
+				# change: /home/wizard/.local/lib/python3.10/site-packages/bosdyn/client/lease.py
+				# so that it keeps the lease, forever
+				#while not x:
+				#	x = request.done()
+					#self.get_logger().info("%s" %type(x))
+				#print(request.result(), 300 * "-")
+	"""
+
 	def main_loop(self):
+		#self.request_spot_lease()
 		try:  # use spots visual odometry transform
 			# tf2 odom
 			odom_tf2 = self.tf_buffer.lookup_transform("vision", "camera_link", rclpy.time.Time())

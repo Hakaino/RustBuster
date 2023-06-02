@@ -16,23 +16,23 @@ def generate_launch_description():
 	ld.add_action(Node(package='tf2_ros', executable='static_transform_publisher',
 	                   arguments=['-.45', '.0', '-.15', '.0', '-.1', '.0', 'camera_link', 'body']))
 
-	# Ros2 bag
-	if 0:
-		"""bag_path = "rosbag2_2023_05_22-17_07_25"
-		ld.add_action(actions.ExecuteProcess(cmd=['ros2', 'bag', 'play', '--clock 100', bag_path]))
-					, "--topics", "/odometry", "/points_back", "/points_left", "/points_right", "/points_frontleft"
-					, "/points_frontright", "/camera/back/image", "/robot_description", "/tf", "/tf_static"],
-					, "/depth/frontleft/image", "/camera/frontleft/camera_info" ],
-					 output='log'))"""
-		ld.add_action(actions.ExecuteProcess( cmd=['ros2', 'bag', 'record', "--all"], output='screen' ))
 
 	# Nav2
-	if 0:
+	if 1:
 		nav2_launch = os.path.join(get_package_share_directory("nav2_bringup"), 'launch', "navigation_launch.py")
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(nav2_launch)))
 
-	# My controller
+	# Explore_lite
 	if 0:
+		ld.add_action(Node(
+				package="explore_lite",
+				name="explore_node",
+				executable="explore",
+				parameters=[os.path.join(get_package_share_directory("rustbuster"), "config", "front_expl_param.yaml")]
+		))
+
+	# My controller
+	if 1:
 		ld.add_action(Node(
 			package="rustbuster",
 			executable="rustbuster_init",
@@ -41,31 +41,11 @@ def generate_launch_description():
 		))
 
 	# Spot driver
-	if 0:
+	if 1:
 		spot_config = os.path.join(get_package_share_directory('rustbuster'), 'config/spot_config.yaml')
 		spot_launch = os.path.join(get_package_share_directory('spot_driver'), 'launch', "spot_driver.launch.py")
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(spot_launch),
 		                                       launch_arguments={"config_file": spot_config}.items()))
-
-	# RVIZ2
-	if 0:
-		ld.add_action(Node(
-				package='rviz2',
-				namespace='rviz2',
-				executable='rviz2',
-				name='rviz2',
-				arguments=["-d", os.path.join(get_package_share_directory("rustbuster"), "config", "spot_rviz2_config.rviz")],
-				output='log'
-		))
-
-	# Explorer
-	if 0:
-		ld.add_action(Node(
-				package="explore_lite",
-				name="explore_node",
-				executable="explore",
-				parameters=[os.path.join(get_package_share_directory("rustbuster"), "config", "front_expl_param.yaml")]
-		))
 
 	# rtabmaps
 	if 1:
@@ -126,19 +106,32 @@ def generate_launch_description():
 					remappings=[('/imu/data_raw', '/camera/imu')]
 		))
 
-	# spot_description
-	if 0:
-		default_model_path = os.path.join(get_package_share_directory('spot_description'), 'urdf/spot.urdf.xacro')
-		ld.add_action(Node(
-				package='robot_state_publisher',
-				executable='robot_state_publisher',
-				parameters=[{'robot_description': Command(['xacro ', default_model_path])}]
-		))
-
 	# Realsense
-	if 0:
+	if 1:
 		realsense_launch = os.path.join(get_package_share_directory("rustbuster"), 'launch', "rs_launch.py")
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(realsense_launch)))
+
+	# RVIZ2
+	if 1:
+		ld.add_action(Node(
+				package='rviz2',
+				namespace='rviz2',
+				executable='rviz2',
+				name='rviz2',
+				arguments=["-d", os.path.join(get_package_share_directory("rustbuster"), "config", "spot_rviz2_config.rviz")],
+				output='log'
+		))
+	"---------------------------------------------------------------"
+
+	# Ros2 bag
+	if 0:
+		"""bag_path = "rosbag2_2023_05_22-17_07_25"
+		ld.add_action(actions.ExecuteProcess(cmd=['ros2', 'bag', 'play', '--clock 100', bag_path]))
+					, "--topics", "/odometry", "/points_back", "/points_left", "/points_right", "/points_frontleft"
+					, "/points_frontright", "/camera/back/image", "/robot_description", "/tf", "/tf_static"],
+					, "/depth/frontleft/image", "/camera/frontleft/camera_info" ],
+					 output='log'))"""
+		ld.add_action(actions.ExecuteProcess( cmd=['ros2', 'bag', 'record', "--all"], output='screen' ))
 
 	# Apriltags
 	if 0:
@@ -162,6 +155,15 @@ def generate_launch_description():
 					"camera_frame": "camera_link",
 					"publish_tag_detections": True
 				}],
+		))
+
+	# spot_description
+	if 0:
+		default_model_path = os.path.join(get_package_share_directory('spot_description'), 'urdf/spot.urdf.xacro')
+		ld.add_action(Node(
+				package='robot_state_publisher',
+				executable='robot_state_publisher',
+				parameters=[{'robot_description': Command(['xacro ', default_model_path])}]
 		))
 
 	return ld
