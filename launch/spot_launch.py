@@ -18,7 +18,7 @@ def generate_launch_description():
 
 
 	# Nav2
-	if 1:
+	if 0:
 		nav2_launch = os.path.join(get_package_share_directory("nav2_bringup"), 'launch', "navigation_launch.py")
 		ld.add_action(IncludeLaunchDescription(PythonLaunchDescriptionSource(nav2_launch)))
 
@@ -121,31 +121,22 @@ def generate_launch_description():
 				arguments=["-d", os.path.join(get_package_share_directory("rustbuster"), "config", "spot_rviz2_config.rviz")],
 				output='log'
 		))
-	"---------------------------------------------------------------"
-
-	# Ros2 bag
-	if 0:
-		"""bag_path = "rosbag2_2023_05_22-17_07_25"
-		ld.add_action(actions.ExecuteProcess(cmd=['ros2', 'bag', 'play', '--clock 100', bag_path]))
-					, "--topics", "/odometry", "/points_back", "/points_left", "/points_right", "/points_frontleft"
-					, "/points_frontright", "/camera/back/image", "/robot_description", "/tf", "/tf_static"],
-					, "/depth/frontleft/image", "/camera/frontleft/camera_info" ],
-					 output='log'))"""
-		ld.add_action(actions.ExecuteProcess( cmd=['ros2', 'bag', 'record', "--all"], output='screen' ))
 
 	# Apriltags
-	if 0:
+	if 1:
 		ld.add_action(Node(
 				package="apriltag_ros",
 				executable='apriltag_node',
-				remappings=[
-					('image_rect', '/camera/color/image_raw'),
-					('camera_info', '/camera/color/camera_info'),
+				remappings=[ # TODO: uncomment to work with the D455
+					('image_rect', "/camera/color/image_raw"),
+					('camera_info', "/camera/color/camera_info"),
+					#('image_rect', "/image_raw"),
+					#('camera_info', "/camera_info"),
 				],
 				parameters=[{
 					"tag_family": "tag36h11",  # tag36h10, tag25h9, tag25h7 and tag16h5
-					"tag_border": 1,
-					"tag_threads": 4,
+					"tag_border": .1,
+					"tag_threads": 6,
 					"tag_decimate": 1.0,
 					"tag_blur": 0.0,
 					"tag_refine_edges": 1,
@@ -157,13 +148,22 @@ def generate_launch_description():
 				}],
 		))
 
-	# spot_description
+	"---------------------------------------------------------------"
+	# Webcam for tests
 	if 0:
-		default_model_path = os.path.join(get_package_share_directory('spot_description'), 'urdf/spot.urdf.xacro')
 		ld.add_action(Node(
-				package='robot_state_publisher',
-				executable='robot_state_publisher',
-				parameters=[{'robot_description': Command(['xacro ', default_model_path])}]
+				package='usb_cam',
+				executable='usb_cam_node_exe',
 		))
+
+	# Ros2 bag
+	if 0:
+		"""bag_path = "rosbag2_2023_05_22-17_07_25"
+		ld.add_action(actions.ExecuteProcess(cmd=['ros2', 'bag', 'play', '--clock 100', bag_path]))
+					, "--topics", "/odometry", "/points_back", "/points_left", "/points_right", "/points_frontleft"
+					, "/points_frontright", "/camera/back/image", "/robot_description", "/tf", "/tf_static"],
+					, "/depth/frontleft/image", "/camera/frontleft/camera_info" ],
+					 output='log'))"""
+		ld.add_action(actions.ExecuteProcess( cmd=['ros2', 'bag', 'record', "--all"], output='screen' ))
 
 	return ld

@@ -4,7 +4,7 @@ from rclpy.node import Node
 from std_msgs.msg import Bool
 from sensor_msgs.msg import Imu, PointCloud2, PointField
 from nav_msgs.msg import Odometry
-#from apriltag_ros.msg import AprilTagDetectionArray
+from apriltag_msgs.msg import AprilTagDetectionArray
 from geometry_msgs.msg import TransformStamped, Vector3
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
@@ -25,7 +25,7 @@ class RustBusterMain(Node):
 		super().__init__('rustbuster_main')
 		# Subscribers
 		self.switch = self.create_subscription(Bool, "rustbuster/explore", self.control, 1)
-		#self.detections_sub = self.create_subscription(AprilTagDetectionArray, "/detections", self.apriltag_detections, 1)
+		self.detections_sub = self.create_subscription(AprilTagDetectionArray, "/detections", self.detections, 1)
 		self.imu_sub = self.create_subscription(Imu, "/imu/data", self.cov_imu, 1)
 
 		# Publishers
@@ -143,8 +143,20 @@ class RustBusterMain(Node):
 			self.get_logger().info(" trouble in fake odom..............")
 
 
-	#def apriltag_detections(self, detection_array):
-	#	detection_array
+	#def apriltag_detections
+	def detections(self, dets):
+
+		#for d in dets:
+			#if not d in self.dets_list:
+		if dets.detections:
+			msg = "tag_%s\tt(ns)=%s\n" %(str(dets.detections[-1].id), str(self.get_clock().now().nanoseconds))
+			# Append-adds at last
+			file1 = open("tags_found.txt", "a")  # append mode
+			file1.write(msg)
+			file1.close()
+			self.get_logger().info(msg)
+
+
 
 def main(args=None):
 	rclpy.init(args=args)
