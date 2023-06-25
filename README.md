@@ -1,56 +1,67 @@
 # RustBuster
-<!---Automated Robotics Inspection of Offshore Platforms for Automated Maintenance-->
-RustBuster is a project that uses the Spot robot from Boston Dynamics to inspect offshore oil platforms for rust and other forms of corrosion. The robot is programmed in Python and the Robot Operating System (ROS).
-## Motivation
+This is a **ROS2** (Humble) project developed to perform **Autonomous Simultaneous Localization and Mapping** (A-SLAM) using a Spot robot from Boston Dynamics.
 
+<img src="spot.png" alt="drawing" width="300"/>
+
+<!---## Motivation
 Offshore oil platforms are critical infrastructure that must be maintained to ensure their safety and longevity. Regular inspections are required to identify and address any signs of corrosion or other forms of degradation. However, these inspections can be dangerous and time-consuming for human inspectors, making it difficult to perform regular, thorough checks.
-
 RustBuster was created to address this challenge by providing a safe, efficient, and automated solution for inspecting offshore oil platforms. The Spot robot is able to access difficult-to-reach areas and collect data on the condition of the platform, making it possible to perform regular and comprehensive inspections.
-## Features
+to inspect offshore oil platforms for rust and other forms of corrosion.--->
 
- * Spot robot equipped with cameras and sensors for data collection
- * Custom software developed in Python and ROS to control the robot and process data 
- * Automated inspection routines that allow the robot to survey offshore oil platforms for signs of corrosion and other forms of degradation
+## Hardware
+ * Spot robot
+ * RealSense Intel D455 (RGB-D and IMU)
+ * Laptop
+ * Ethernet cable (optional)
 
-## Getting Started
+The intel d455 is used instead of spot's, native cameras because it has a higher frame rate and IMU.\
+**NOTE:** It is possible to calculate Spot's IMU using the odometry messages, but the method is slow and imprecise.
 
-These instructions will help you set up and use RustBuster for your own offshore oil platform inspections.
-### Prerequisites
+## Installation
+This system was developed and tested only in a Lenovo IdeaPad Gaming 3 15ARH05 laptop running **Ubuntu 22.04**. 
 
-You will need the following software and hardware to use RustBuster:
-
- * Spot robot from Boston Dynamics
- * Computer with ROS2 and Python3 installed
-
-### Use Docker container (no installation required)
-  ````
-  git clone https://github.com/Hakaino/RustBuster
-  cd RustBuster
-  docker build -t packman/rustbuster .
-  ````
-### Installation
-1. Clone the RustBuster and other required repositories to your computer:
+Install dependencies from public repositories:
    ```
-   git clone https://github.com/Hakaino/RustBuster
-   cd RustBuster
-   git clone https://github.com/bdaiinstitute/spot_ros2.git
-   ```
-2. Install any necessary dependencies by running the following command:
-   ````
+   sudo apt update
+   
+   # Boston Dynamics software
    pip3 install bosdyn-client bosdyn-mission bosdyn-api bosdyn-core
-   sudo apt install ros-$ROS_DISTRO-cartographer # used for 3D SLAM
-   sudo apt install ros-foxy-turtlebot3* # used to simulate the exploration since spot simulations are not great
+   
+   # Ros related packages
+   sudo apt install -y \
+   ros-humble-nav2* \
+   ros-humble-imu-filter-madgwick* \
+   ros-humble-librealsense2* \
+   ros-humble-apriltag* \
+   ros-humble-usb-cam*     # (Optional)
+   ```
+   
+Clone repositories into ROS2 workspace:
+   ```
+   mkdir -p ros2_ws/src && cd ros2_ws/src 
+   git clone https://github.com/Hakaino/RustBuster
+   git clone https://github.com/bdaiinstitute/spot_ros2.git
+   git clone https://github.com/robo-friends/m-explore-ros2
+   cd ..
    rosdep install --from-paths src --ignore-src -r -y 
-   ````
-3. Build and source the project by running the following command:
-    ```
-    colcon build --symlink-install
-    source install/setup.bash
-    ```
-### Usage
+   ```
+
+## Setup Spot
+Follow this [Connect Spot](https://support.bostondynamics.com/s/article/Spot-network-setup#ConnecttoSpotviaDirectEthernet)
+
+<details>
+<summary>AAU memebers</summary>
+<br>
+I developed this project as a student at Aalborg University (AAU).
+Contact Frank Rasmussen (fhr@es.aau.dk) to get access to a robot.
+</details>
+
+## Usage
 4. Connect the Spot robot to your computer and turn it on.
 5. Launch the RustBuster program by running the following command:\
    ```
+   colcon build --symlink-install
+   source install/setup.bash
    ros2 launch rustbuster rustbuster_launch.py
    ```
 6. The robot will begin performing the inspection routine and collecting data. You can monitor the progress and view the data by using the ROS tools.
