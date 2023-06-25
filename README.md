@@ -76,7 +76,7 @@ To other students working with spot, I suggest:
    ([instructions](https://support.bostondynamics.com/s/article/Startup-Procedure#StartupProcedure))
 3. Configure the fields **username**, **password**, **hostname** in [spot_config.yaml](config/spot_config.yaml)
 
-> :warning: **if **auto_stand** is set True, the robot will stand up
+> :warning: If **auto_stand** is set True, the robot will stand up
 
 4. In the terminal, navigate to **ROS2_WS** folder generated during installation, and run the command:
    ```
