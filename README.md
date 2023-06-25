@@ -40,7 +40,9 @@ Install dependencies from public repositories:
    ros-humble-apriltag* \
    ros-humble-usb-cam*     # (Optional)
    ```
+
 > :warning: If RTAB-Map does not install correctly, download it from source and follow the installation instructions.
+
 Clone repositories into ROS2 workspace:
 
    ```
