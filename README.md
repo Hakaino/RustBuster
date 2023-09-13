@@ -2,6 +2,7 @@
 
 This project uses **ROS2** (Humble) to perform **Autonomous Simultaneous Localization and Mapping** (A-SLAM) using
 a **Spot** robot from Boston Dynamics.
+The project was named Rustbuster due to the fact that it was initially intended to perform corrosion inspection, in an offshore platform.
 
 <img src="dog.png" alt="dog" height="300"/>
 
