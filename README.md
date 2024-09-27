@@ -100,8 +100,7 @@ contains lots of **if** statements, to deactivate parts of the program, for debu
 
 ## Contributing
 
-If you would like to contribute, please feel free to open a pull request or reach out
-to me via [e-mail](marco_alemao@hotmail.com). \
+If you would like to contribute, please feel free to open a pull. \
 It will be nice to talk to other developers :smile:
 
 ## License
